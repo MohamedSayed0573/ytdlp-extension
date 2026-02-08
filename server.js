@@ -15,7 +15,17 @@ app.get("/api/video-sizes/:videoTag", (req, res) => {
 
     execFile(
         "yt-dlp",
-        ["-J", "--no-warnings", videoTag],
+        [
+            "-J",
+            "--no-warnings",
+            "--skip-download",
+            "--js-runtimes",
+            "node",
+            videoTag,
+        ],
+        {
+            timeout: 20000, // 20 seconds timeout
+        },
         (error, stdout, stderr) => {
             if (error) {
                 console.error(`Error executing yt-dlp: ${error.message}`);
