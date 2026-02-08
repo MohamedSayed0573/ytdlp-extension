@@ -1,8 +1,9 @@
 const express = require("express");
 const app = express();
-const { exec, execFile } = require("node:child_process");
+const { execFile } = require("node:child_process");
 const { filesize } = require("filesize");
 const ms = require("ms");
+require("dotenv").config();
 
 app.get("/test", (req, res) => {
     res.json({ message: "Hello from the API!" });
@@ -28,7 +29,7 @@ app.get("/api/video-sizes/:videoTag", (req, res) => {
 
             const videoFormats = ["394", "395", "396", "397", "398", "399"];
             const audioFormat = "251";
-            
+
             const parsedData = {
                 id: data.id,
                 title: data.title,
@@ -60,7 +61,6 @@ app.get("/api/video-sizes/:videoTag", (req, res) => {
     );
 });
 
-app.listen(3000, () => {
-    console.log("Server is running on port 3000");
+app.listen(process.env.PORT, () => {
+    console.log(`Server is running on port ${process.env.PORT}`);
 });
-
