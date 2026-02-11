@@ -1,13 +1,13 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const { execFile } = require("node:child_process");
 const { filesize } = require("filesize");
 const ms = require("ms");
 require("dotenv").config();
 
-app.get("/test", (req, res) => {
-    res.json({ message: "Hello from the API!" });
-});
+// Enable CORS for all routes
+app.use(cors());
 
 app.get("/api/video-sizes/:videoTag", (req, res) => {
     const startTime = Date.now();
