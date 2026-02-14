@@ -1,0 +1,30 @@
+{
+    "manifest_version": 3,
+    "name": "Youtube Size",
+    "version": "1.0",
+    "description": "Youtube video sizes using yt-dlp",
+
+    "permissions": ["activeTab", "scripting", "tabs", "storage"],
+
+    "icons": {
+        "48": "youtube.png"
+    },
+
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "js": ["content.js"],
+            "matches": ["<all_urls>"]
+        }
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "host_permissions": [
+        "https://*.youtube.com/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+    ]
+}
