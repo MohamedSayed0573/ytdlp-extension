@@ -11,7 +11,14 @@ class InvalidInputError extends AppError {
     }
 }
 
+class RateLimit extends AppError {
+    constructor(message) {
+        super(message, 429);
+    }
+}
+
 module.exports = {
     AppError,
     InvalidInputError,
+    RateLimit
 };
