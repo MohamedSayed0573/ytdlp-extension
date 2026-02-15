@@ -32,20 +32,27 @@ app.get("/health", (req, res) => {
     res.json({ status: "ok" });
 });
 
+app.use((req, res) => {
+    res.status(404).json({ error: "Route not found" });
+})
+
 // Error handler
 app.use((err, req, res, next) => {
+    console.error(err);
+
     const status = err instanceof AppError ? err.statusCode : 500;
     const message =
         err instanceof AppError ? err.message : "Internal Server Error";
 
     if (process.env.NODE_ENV === "production") {
         res.status(status).json({
-            message,
+            error: message,
         });
     } else {
         res.status(status).json({
-            message,
-            errors: err.errors,
+            error: message,
+            ERRORS: err.errors,
+            stack: err.stack,
         });
     }
 });

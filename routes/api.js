@@ -16,7 +16,7 @@ Router.get("/video-sizes/:videoTag", async (req, res) => {
     }
 
     try {
-        const { stdout, stderr } = await execFile(
+        const { stdout } = await execFile(
             "yt-dlp",
             [
                 "-J",
