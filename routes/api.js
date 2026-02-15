@@ -40,7 +40,6 @@ Router.get("/video-sizes/:videoTag", async (req, res) => {
         ];
     }
 
-    // yt-dlp --js-runtimes node --no-download -J --remote-components ejs:github gAkwW2tuIqE
     try {
         const { stdout } = await execFile("yt-dlp", args, {
             timeout: CONFIG.YTDLP_TIMEOUT_MS,
@@ -90,7 +89,9 @@ Router.get("/video-sizes/:videoTag", async (req, res) => {
         };
 
         res.json(parsedData);
+        req.log.info(parsedData);
     } catch (err) {
+        req.log.error(err);
         if (err.message.includes("Incomplete YouTube ID")) {
             throw new InvalidInputError("Invalid YouTube URL provided.");
         }

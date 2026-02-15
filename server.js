@@ -7,6 +7,8 @@ const apiRoutes = require("./routes/api");
 const { rateLimit } = require("express-rate-limit");
 const CONFIG = require("./config/constants");
 const helmet = require("helmet");
+const logger = require('pino')();
+const pinoHttp = require('pino-http')();
 
 const limiter = rateLimit({
     windowMs: CONFIG.WINDOW_LIMIT_MS, // Time frame for which requests are checked/remembered
@@ -25,6 +27,8 @@ app.use(helmet());
 // Enable CORS for all routes. This is only for development
 app.use(cors());
 
+app.use(pinoHttp);
+
 // Routes
 app.use("/api", apiRoutes);
 
@@ -38,7 +42,7 @@ app.use((req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-    console.error(err);
+    logger.error(err);
 
     const status = err instanceof AppError ? err.statusCode : 500;
     const message =
@@ -58,5 +62,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(process.env.PORT || 3000, () => {
-    console.log(`Server is running on port ${process.env.PORT}`);
+    logger.info(`Server is running on port ${process.env.PORT}`);
 });

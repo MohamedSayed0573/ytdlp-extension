@@ -1,4 +1,5 @@
 #!/bin/bash
+# This file contains commands to run when you first launch a new EC2 instance.
 
 # STEP 1
 # 1. System Updates (Non-interactive)
