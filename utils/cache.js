@@ -1,11 +1,9 @@
 const CONFIG = require("../config/constants");
+const env = require("./env");
 
 const Redis = require("redis");
 const redisClient = Redis.createClient({
-    socket: {
-        host: CONFIG.REDIS_HOST,
-        port: CONFIG.REDIS_PORT,
-    },
+    url: env.REDIS_URL,
 });
 
 async function checkCache(videoTag) {

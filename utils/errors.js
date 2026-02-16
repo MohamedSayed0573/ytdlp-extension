@@ -17,8 +17,15 @@ class RateLimit extends AppError {
     }
 }
 
+class UnAuthenticated extends AppError {
+    constructor(message) {
+        super(message, 401);
+    }
+}
+
 module.exports = {
     AppError,
     InvalidInputError,
-    RateLimit
+    RateLimit,
+    UnAuthenticated
 };

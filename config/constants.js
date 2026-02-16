@@ -6,8 +6,7 @@ const CONFIG = Object.freeze({
     LIMIT: 20, // Number of requests allowed in the time frame
     YOUTUBE_ID_REGEX: /^[a-zA-Z0-9_-]{11}$/,
     CACHE_TTL: 3 * 60 * 60 * 1000, // 3 hour
-    REDIS_HOST: "localhost",
-    REDIS_PORT: 6379,
+    SHUTDOWN_TIMEOUT_MS: 30 * 1000, // 30 seconds
 });
 
 module.exports = CONFIG;

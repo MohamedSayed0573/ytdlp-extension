@@ -10,6 +10,7 @@ const CONFIG = require("./config/constants");
 const { logger, pinoHttp } = require("./utils/logger");
 const { redisClient } = require("./utils/cache");
 const ms = require("ms");
+const authMiddleware = require("./middleware/auth");
 
 const limiter = rateLimit({
     windowMs: CONFIG.WINDOW_LIMIT_MS, // Time frame for which requests are checked/remembered
@@ -26,18 +27,20 @@ app.use(helmet());
 app.use(limiter);
 
 // Enable CORS for all routes. This is only for development
+// My IP is dynamic and I haven't started the extension therefore, I don't have extension ID
 app.use(cors());
 
 app.use(pinoHttp);
 
 // Routes
-app.use("/api", apiRoutes);
+app.use("/api", authMiddleware, apiRoutes);
 
 app.get("/health", (req, res) => {
     res.json({
         status: "ok",
-        uptime: ms(Math.round(process.uptime())),
-        timestamp: new Date().toISOString()
+        uptime: ms(Math.round(process.uptime()) * 1000),
+        timestamp: new Date().toISOString(),
+        redisStatus: redisClient.isOpen ? "Connected" : "Disconnected",
     });
 });
 
@@ -68,7 +71,7 @@ app.use((err, req, res, next) => {
     }
 });
 
-app.listen(env.PORT, async () => {
+const server = app.listen(env.PORT, async () => {
     if (env.REDIS_ENABLED) {
         try {
             await redisClient.connect();
@@ -87,41 +90,41 @@ redisClient.on("error", (error) => {
     logger.error({ error }, "Redis client error");
 });
 
+async function gracefulShutdown(signal) {
+    logger.info(`Server is shutting down (${signal})`);
+
+    server.close(async () => {
+        try {
+            // We wrap this in try/catch because if redis has already quit, it will throw if you try to quit again
+            await redisClient.quit();
+            process.exit(0);
+        } catch (_) {}
+    });
+
+    setTimeout(() => {
+        logger.info(
+            `Could not close connections in time, forcefully shutting down`,
+        );
+        process.exit(1);
+    }, CONFIG.SHUTDOWN_TIMEOUT_MS);
+}
+
 // SIGINT: Signal Interrupt (Ctrl+C)
 process.on("SIGINT", async () => {
-    // We wrap this in try/catch because if redis has already quit, it will throw if you try to quit again
-    try {
-        await redisClient.quit();
-    } catch (_) {}
-    logger.info(`Server is shutting down (SIGINT)`);
-    process.exit(0);
+    gracefulShutdown("SIGINT");
 });
 
 // SIGNTERM: Signal Termination (Kill)
 process.on("SIGTERM", async () => {
-    try {
-        await redisClient.quit();
-    } catch (_) {}
-    logger.info("Server is shutting down (SIGTERM)");
-    process.exit(0);
+    gracefulShutdown("SIGTERM");
 });
 
 // Uncaught Exception
 process.on("uncaughtException", async (err) => {
-    logger.fatal(err);
-    try {
-        await redisClient.quit();
-    } catch (_) {}
-    logger.info("Server is shutting down (uncaughtException)");
-    process.exit(1);
+    gracefulShutdown("uncaughtException");
 });
 
 // Unhandled Promise Rejection. When a promise rejects but there is no catch block to handle it.
 process.on("unhandledRejection", async (reason) => {
-    logger.fatal(reason);
-    try {
-        await redisClient.quit();
-    } catch (_) {}
-    logger.info("Server is shutting down (unhandledRejection)");
-    process.exit(1);
+    gracefulShutdown("unhandledRejection");
 });

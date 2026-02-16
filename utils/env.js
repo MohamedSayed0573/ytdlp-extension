@@ -2,20 +2,29 @@ require("dotenv").config({
     quiet: true,
 });
 const z = require("zod");
-const { logger } = require("./logger");
 
 const envSchema = z.object({
     PORT: z.coerce
-        .number()       // Coerces "3000" -> 3000
+        .number() // Coerces "3000" -> 3000
         .default(3000), // Default is a number
     NODE_ENV: z.enum(["development", "production"]).default("development"),
+    // Without nonemptry, Zod would accept "".
+    API_KEY: z
+    .string()
+    .min(10, "API_KEY must be at least 10 characters long")
+    .regex(
+        /^[a-zA-Z0-9_\-=+@!#$%^&*();:.,?><'"|{}\[\]]+$/,
+        "Invalid characters in API key",
+    ),
     REDIS_ENABLED: z.coerce.boolean().default(false), // Coerces "true" -> true
+    REDIS_URL: z.url("Invalid Redis URL").default("redis://localhost:6379"),
 });
 
 const env = envSchema.safeParse(process.env);
 if (!env.success) {
-    logger.fatal("❌ Environment validation failed:");
-    logger.fatal(env.error);
+    console.error("❌ Environment validation failed:");
+    // We use console instead of pino to avoid circular dependencies
+    console.error(env.error);
     process.exit(1);
 }
 
