@@ -3,33 +3,37 @@ const ms = require("ms");
 const { filesize } = require("filesize");
 
 function formatResponse(data) {
-    const videoFormats = CONFIG.VIDEO_FORMAT_IDS;
-    const audioFormat = CONFIG.AUDIO_FORMAT_ID;
+    const videoFormatsIDs = CONFIG.VIDEO_FORMAT_IDS;
+    const audioFormatID = CONFIG.AUDIO_FORMAT_ID;
 
+    // Video Duration
     const rawDuration =
-        data.duration ?? data.formats?.[0]?.fragments?.[0]?.duration;
-    const duration = rawDuration != null ? ms(rawDuration * 1000) : null;
+        data.duration ?? data.formats?.[0]?.fragments?.[0]?.rawDuration ?? null;
+    const duration = rawDuration !== null ? ms(rawDuration * 1000) : null;
 
+    // Audio Format Size
     const rawAudioFormat = data.formats.find(
-        (format) => format.format_id === audioFormat,
+        (format) => format.format_id === audioFormatID,
     );
     const audioFormatSize = rawAudioFormat
-        ? filesize(rawAudioFormat.filesize ?? rawAudioFormat.filesize_approx)
+        ? (rawAudioFormat.filesize || rawAudioFormat.filesize_approx)
         : null;
 
-    const rawVideoFormats = data.formats.filter(
-        (format) =>
-            videoFormats.includes(format.format_id) &&
-            format.height &&
-            (format.filesize || format.filesize_approx),
-    );
-    const videoFormatsSize = rawVideoFormats.map((format) => {
-        return {
-            format_id: format.format_id,
-            height: format.height,
-            filesize: filesize(format.filesize ?? format.filesize_approx),
-        };
-    });
+    // Video Formats Sizes
+    const videoFormatsSize = data.formats
+        .filter(
+            (format) =>
+                videoFormatsIDs.includes(format.format_id) &&
+                format.height &&
+                (format.filesize || format.filesize_approx),
+        )
+        .map((format) => {
+            return {
+                format_id: format.format_id,
+                height: format.height,
+                filesize: format.filesize ?? format.filesize_approx,
+            };
+        });
 
     return {
         id: data.id,
@@ -40,6 +44,31 @@ function formatResponse(data) {
     };
 }
 
+function humanizeSizes(data) {
+    if (data.audioFormat) {
+        data.audioFormat = filesize(data.audioFormat);
+    }
+    if (data.videoFormats) {
+        data.videoFormats.forEach((format) => {
+            if (format.filesize) {
+                format.filesize = filesize(format.filesize);
+            }
+        });
+    }
+}
+
+function mergeAudioWithVideoFormats(data) {
+    if (data.audioFormat && data.videoFormats) {
+        data.videoFormats.forEach((format) => {
+            if (format.filesize) {
+                format.filesize += data.audioFormat;
+            }
+        });
+    }
+}
+
 module.exports = {
     formatResponse,
+    humanizeSizes,
+    mergeAudioWithVideoFormats,
 };

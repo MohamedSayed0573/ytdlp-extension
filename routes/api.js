@@ -1,14 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const { InvalidInputError } = require("../utils/errors");
-const { formatResponse } = require("../utils/formatResponse");
-const { getVideoInfo, validateVideoTag } = require("../utils/ytdlp");
+const { formatResponse, humanizeSizes, mergeAudioWithVideoFormats } = require("../utils/formatResponse");
+const {
+    getVideoInfo,
+    validateVideoTag,
+} = require("../utils/ytdlp");
 const ms = require("ms");
 const { checkCache, setCache } = require("../utils/cache");
 
 router.get("/video-sizes/:videoTag", async (req, res) => {
     const startTime = Date.now();
     const videoTag = req.params.videoTag;
+    const humanReadableSizes = req.query.humanReadableSizes !== "false"; // Enabled by default
+    const mergeAudioWithVideo = req.query.mergeAudioWithVideo === "true"; // Disabled by default
 
     // Note: yt-dlp should validate the video tag, but just in case
     if (!validateVideoTag(videoTag)) {
@@ -25,6 +30,16 @@ router.get("/video-sizes/:videoTag", async (req, res) => {
         const data = await getVideoInfo(videoTag);
         formattedData = formatResponse(data);
         await setCache(videoTag, JSON.stringify(formattedData));
+    }
+    
+    // IMPORTANT: mergeAudioWithVideoFormats must run before humanizeSizes if both are enabled
+
+    if (mergeAudioWithVideo) {
+        mergeAudioWithVideoFormats(formattedData);
+    }
+
+    if (humanReadableSizes) {
+        humanizeSizes(formattedData);
     }
 
     const executionTime = ms(Date.now() - startTime);
