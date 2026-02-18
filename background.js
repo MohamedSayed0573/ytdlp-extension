@@ -4,16 +4,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type !== "sendYoutubeUrl") {
         return;
     }
-    const tag = encodeURIComponent(message.value);
+    const tag = message.value;
     console.log("[background] Received tag:", tag);
 
-    const url = `http://172.26.248.186:3000/api/video-sizes/${tag}`;
-    console.log("[background] Fetching URL:", url);
+    // __API_URL__ is injected by esbuild
+    const humanReadableSizes = true;
+    const mergeAudioWithVideo = true;
+    const apiUrl = `${__API_URL__}/api/video-sizes/${tag}/?humanReadableSizes=${humanReadableSizes}&mergeAudioWithVideo=${mergeAudioWithVideo}`;
+    console.log("[background] Fetching URL:", apiUrl);
 
-    fetch(url)
+    fetch(apiUrl, {
+        method: "GET",
+        headers: {
+            "x-api-key": __API_KEY__, // Injected by esbuild
+        },
+    })
         .then((res) => {
             console.log("[background] Response status:", res.status);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
             return res.json();
         })
         .then((data) => {
@@ -25,6 +34,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             sendResponse({ success: false, message: err.message });
         });
 
-    return true; // MUST be synchronous return, not from async function
+    return true; // To keep the message channel open
 });
-//

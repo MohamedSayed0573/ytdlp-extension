@@ -4,8 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "esbuild popup.js --bundle --platform=browser --target=chrome90 --format=iife --outfile=dist/popup.js --sourcemap",
-        "watch": "esbuild popup.js --bundle --platform=browser --target=chrome90 --format=iife --outfile=dist/popup.js --sourcemap --watch"
+        "build": "esbuild popup.js background.js --bundle --platform=browser --target=chrome90 --format=iife --outdir=dist --sourcemap --define:__API_URL__='\"http://54.234.106.10:80\"' --define:__API_KEY__='\"13%lrk!4,r9alof,pwrgrg;tpmpsf23pl40\"'",
+        "watch": "esbuild popup.js background.js --bundle --platform=browser --target=chrome90 --format=iife --outdir=dist --sourcemap --watch --define:__API_URL__='\"http://54.234.106.10:80\"' --define:__API_KEY__='\"13%lrk!4,r9alof,pwrgrg;tpmpsf23pl40\"'"
     },
     "keywords": [],
     "author": "",

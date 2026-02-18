@@ -151,7 +151,11 @@
       var audioDisplay = document.getElementById("audio-display");
       function showError(msg) {
         console.error("[popup] Error:", msg);
-        statusEl.innerHTML = `<div class="error">\u26A0\uFE0F Error: ${msg}</div>`;
+        statusEl.innerHTML = `<div class="error">Error: ${msg}</div>`;
+      }
+      function showInfo(msg) {
+        console.log("[popup] Info:", msg);
+        statusEl.innerHTML = `<div class="info">${msg}</div>`;
       }
       function displayVideoInfo(data) {
         try {
@@ -190,55 +194,68 @@
         }
       }
       function extractTag(url) {
-        const index = url.indexOf("=");
-        if (index === -1) {
-          throw new Error("Error extracting video tag");
+        if (url.includes("watch?v=")) {
+          const tag = url.split("watch?v=")[1].split("&")[0];
+          const regex = /^[a-zA-Z0-9_-]{11}$/;
+          if (!regex.test(tag)) {
+            throw new Error("Invalid YouTube video URL");
+          }
+          return tag;
         }
-        return tag = url.slice(index + 1);
+        return null;
       }
       function isYoutubeVideo(url) {
         return url.includes("youtube.com/");
       }
-      async function saveToStorage(tag2, response) {
+      async function saveToStorage(tag, response) {
         const now = /* @__PURE__ */ new Date();
         response.data.createdAt = now.toISOString();
-        await chrome.storage.local.set({ [tag2]: response.data });
+        await chrome.storage.local.set({ [tag]: response.data });
       }
-      async function getFromStorage(tag2) {
-        const res = await chrome.storage.local.get(tag2);
-        return res == null ? void 0 : res[tag2];
+      async function getFromStorage(tag) {
+        const res = await chrome.storage.local.get(tag);
+        return res == null ? void 0 : res[tag];
+      }
+      function showCachedNote(createdAt) {
+        const now = /* @__PURE__ */ new Date();
+        const createdDate = new Date(createdAt);
+        const diff = now - createdDate;
+        const humanAgo = (0, import_ms.default)(diff) + " ago";
+        console.log("[popup] Video info cached", humanAgo);
+        const note = document.createElement("div");
+        note.className = "cached-note";
+        note.textContent = `Cached ${humanAgo}`;
+        statusEl.prepend(note);
       }
       chrome.tabs.query({ active: true }, async (tab) => {
         const url = tab[0].url;
         if (!isYoutubeVideo(url)) {
-          showError("Not a YouTube video page");
+          showInfo("Not a YouTube video page");
           return;
         }
-        const tag2 = extractTag(url);
+        const tag = extractTag(url);
+        if (!tag) {
+          showInfo("Open a Youtube video");
+          return;
+        }
         try {
-          const cached = await getFromStorage(tag2);
+          const cached = await getFromStorage(tag);
           if (cached) {
-            const diffMs = Date.now() - Date.parse(cached.createdAt);
-            const humanAgo = (0, import_ms.default)(diffMs, { long: true }) + " ago";
-            console.log("Cached:", humanAgo);
             displayVideoInfo(cached);
-            const note = document.createElement("div");
-            note.className = "cached-note";
-            note.textContent = `Cached ${humanAgo}`;
-            statusEl.prepend(note);
+            showCachedNote(cached.createdAt);
             return;
           }
         } catch (e) {
           console.error("[popup] Error reading storage:", e);
         }
         chrome.runtime.sendMessage(
-          { type: "sendYoutubeUrl", value: tag2 },
+          { type: "sendYoutubeUrl", value: tag },
           (response) => {
-            if (response == null ? void 0 : response.success) {
+            if (response.success) {
               displayVideoInfo(response.data);
-              saveToStorage(tag2, response);
+              saveToStorage(tag, response);
             } else {
-              showError((response == null ? void 0 : response.message) || "Unknown error - check console");
+              showError(response.message || "Unknown error - check console");
             }
           }
         );

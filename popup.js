@@ -7,7 +7,14 @@ import ms from "ms";
 
 function showError(msg) {
     console.error("[popup] Error:", msg);
-    statusEl.innerHTML = `<div class="error">⚠️ Error: ${msg}</div>`;
+    statusEl.textContent = `Error: ${msg}`;
+    statusEl.className = "error";
+}
+
+function showInfo(msg) {
+    console.log("[popup] Info:", msg);
+    statusEl.textContent = msg;
+    statusEl.className = "info";
 }
 
 function displayVideoInfo(data) {
@@ -30,20 +37,29 @@ function displayVideoInfo(data) {
 
         // Display only video formats
         if (data.videoFormats && data.videoFormats.length > 0) {
-            statusEl.innerHTML = `
-                <div class="formats-section">
-                    ${data.videoFormats
-                        .map(
-                            (format) => `
-                        <div class="format-item" onclick="copyToClipboard('${format.height}p')">
-                            <div class="format-height">${format.height}p:</div>
-                            <div class="format-size">${format.filesize}</div>
-                        </div>
-                    `,
-                        )
-                        .join("")}
-                </div>
-            `;
+            statusEl.textContent = ""; // Clear existing content
+            statusEl.className = "";
+
+            const section = document.createElement("div");
+            section.className = "formats-section";
+
+            data.videoFormats.forEach((format) => {
+                const item = document.createElement("div");
+                item.className = "format-item";
+
+                const heightDiv = document.createElement("div");
+                heightDiv.className = "format-height";
+                heightDiv.textContent = `${format.height}p:`;
+
+                const sizeDiv = document.createElement("div");
+                sizeDiv.className = "format-size";
+                sizeDiv.textContent = format.filesize;
+
+                item.append(heightDiv, sizeDiv);
+                section.appendChild(item);
+            });
+
+            statusEl.appendChild(section);
         } else {
             showError("No video formats found");
         }
@@ -54,11 +70,16 @@ function displayVideoInfo(data) {
 }
 
 function extractTag(url) {
-    const index = url.indexOf("=");
-    if (index === -1) {
-        throw new Error("Error extracting video tag");
+    if (url.includes("watch?v=")) {
+        const tag = url.split("watch?v=")[1].split("&")[0];
+
+        const regex = /^[a-zA-Z0-9_-]{11}$/;
+        if (!regex.test(tag)) {
+            throw new Error("Invalid YouTube video URL");
+        }
+        return tag;
     }
-    return (tag = url.slice(index + 1));
+    return null;
 }
 
 function isYoutubeVideo(url) {
@@ -66,10 +87,9 @@ function isYoutubeVideo(url) {
 }
 
 async function saveToStorage(tag, response) {
-    const now = new Date();
-    response.data.createdAt = now.toISOString();
-
-    await chrome.storage.local.set({ [tag]: response.data });
+    if (!response?.data) return;
+    response.data.createdAt = new Date().toISOString();
+    await chrome.storage.local.set({ [tag]: response?.data });
 }
 
 async function getFromStorage(tag) {
@@ -77,35 +97,48 @@ async function getFromStorage(tag) {
     return res?.[tag];
 }
 
+function showCachedNote(createdAt) {
+    const now = new Date();
+    const createdDate = new Date(createdAt);
+    const diff = now - createdDate;
+    const humanAgo = ms(diff) + " ago";
+    console.log("[popup] Video info cached", humanAgo);
+
+    const note = document.createElement("div");
+    note.className = "cached-note";
+    note.textContent = `Cached ${humanAgo}`;
+    statusEl.prepend(note);
+}
+
 chrome.tabs.query({ active: true }, async (tab) => {
     const url = tab[0].url;
     if (!isYoutubeVideo(url)) {
-        showError("Not a YouTube video page");
+        showInfo("Not a YouTube video page");
         return;
     }
 
     const tag = extractTag(url);
+    if (!tag) {
+        showInfo("Open a Youtube video");
+        return;
+    }
+
     try {
         const cached = await getFromStorage(tag);
         if (cached) {
-            const diffMs = Date.now() - Date.parse(cached.createdAt);
-            const humanAgo = ms(diffMs, { long: true }) + " ago";
-            console.log("Cached:", humanAgo);
-
             displayVideoInfo(cached);
 
             // show a small cached note above the formats
-            const note = document.createElement("div");
-            note.className = "cached-note";
-            note.textContent = `Cached ${humanAgo}`;
-            statusEl.prepend(note);
+            showCachedNote(cached.createdAt);
 
             return;
         }
     } catch (e) {
+        // Silently ignore storage errors, but log them to console for debugging
         console.error("[popup] Error reading storage:", e);
     }
 
+    // No Cache path - fetch from background
     chrome.runtime.sendMessage(
         { type: "sendYoutubeUrl", value: tag },
         (response) => {
