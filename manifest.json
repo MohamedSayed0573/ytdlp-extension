@@ -24,6 +24,6 @@
         "https://*.youtube.com/*",
         "http://localhost/*",
         "http://127.0.0.1/*",
-        "http://54.234.106.10/*"
+        "https://mohammedsayed.dev/*"
     ]
 }
