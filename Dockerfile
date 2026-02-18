@@ -2,11 +2,14 @@ FROM ubuntu:22.04
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        nodejs \
-        npm \
+        curl \
+        ca-certificates \
         python3 \
         python3-pip && \
-    pip3 install --no-cache-dir -U yt-dlp
+    # Install Node.js 20 from NodeSource
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    pip3 install --no-cache-dir -U yt-dlp && \
 
 WORKDIR /api
 
