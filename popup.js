@@ -27,6 +27,7 @@ function displayVideoInfo(data) {
         // Update title, duration, and audio in header
         if (data.title) {
             titleDisplay.textContent = data.title;
+            titleDisplay.title = data.title;
         }
         if (data.duration) {
             durationDisplay.textContent = data.duration;
@@ -110,8 +111,13 @@ function showCachedNote(createdAt) {
     statusEl.prepend(note);
 }
 
-chrome.tabs.query({ active: true, currentWindow: true }, async (tab) => {
-    const url = tab[0].url;
+chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+    const tab = tabs[0];
+    if (!tab) {
+        showInfo("No active tab found");
+        return;
+    }
+    const url = tab.url;
     if (!isYoutubeVideo(url)) {
         showInfo("Not a YouTube video page");
         return;
