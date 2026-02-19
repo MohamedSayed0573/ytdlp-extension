@@ -24,8 +24,8 @@ jobs:
               with:
                   context: .
                   push: true
-                  target: dev
-                  tags: ${{ secrets.DOCKERHUB_USERNAME }}/yt-dlp-api-development:latest
+                  target: prod
+                  tags: ${{ secrets.DOCKERHUB_USERNAME }}/yt-dlp-api:latest
 
     deploy:
         needs: build
@@ -42,7 +42,7 @@ jobs:
                       echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
                       # 2. Pull the latest image
-                      docker pull ${{ secrets.DOCKERHUB_USERNAME }}/yt-dlp-api-development:latest
+                      docker pull ${{ secrets.DOCKERHUB_USERNAME }}/yt-dlp-api:latest
 
                       # 3. Stop and remove the old container
                       docker stop yt-dlp-api || true
@@ -58,7 +58,7 @@ jobs:
                         -e NODE_ENV=production \
                         --name yt-dlp-api \
                         
-                        ${{ secrets.DOCKERHUB_USERNAME }}/yt-dlp-api-development:latest
+                        ${{ secrets.DOCKERHUB_USERNAME }}/yt-dlp-api:latest
 
                       # 5. Clean up old images
                       docker image prune -f
