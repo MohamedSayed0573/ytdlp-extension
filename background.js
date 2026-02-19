@@ -15,9 +15,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     fetch(apiUrl, {
         method: "GET",
-        headers: {
-            "x-api-key": __API_KEY__, // Injected by esbuild
-        },
     })
         .then((res) => {
             console.log("[background] Response status:", res.status);
