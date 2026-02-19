@@ -21,6 +21,8 @@ app.use(
     }),
 );
 
+app.use('trust proxy', true)
+
 // Apply helmet middleware to all requests.
 app.use(helmet({ crossOriginResourcePolicy: false }));
 
@@ -45,7 +47,8 @@ app.get("/health", (req, res) => {
         status: "ok",
         uptime: ms(Math.round(process.uptime()) * 1000),
         timestamp: new Date().toISOString(),
-        redisStatus: redisClient.isOpen ? "Connected" : "Disconnected",
+        redisStatus:
+            redisClient.status === "ready" ? "Connected" : "Disconnected",
         ytdlpVersion: CONFIG.YTDLP_VERSION,
     });
 });
@@ -79,14 +82,13 @@ app.use((err, req, res, next) => {
 
 const server = app.listen(env.PORT, async () => {
     if (env.REDIS_ENABLED) {
-        try {
-            await redisClient.connect();
-            logger.info("Redis connected");
-        } catch (error) {
-            logger.error(
-                { error },
-                "Failed to connect to Redis, caching disabled",
-            );
+        if (
+            redisClient.status === "ready" ||
+            redisClient.status === "connecting"
+        ) {
+            logger.info("Redis connection initialized");
+        } else {
+            logger.warn("Redis is not ready, caching may be disabled");
         }
     }
     logger.info(`Server is running on port ${env.PORT}`);
