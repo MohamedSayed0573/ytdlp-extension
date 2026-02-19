@@ -20,8 +20,8 @@ const envSchema = z.object({
         .string()
         .transform((val) => val.toLowerCase() === "true")
         .default("false"), // "true" -> true, anything else -> false
-    REDIS_URL: z.url("Invalid Redis URL").default("redis://localhost:6379"),
-    EXTENSION_ID: z
+    REDIS_URL: z.string("Invalid Redis URL").default("redis://localhost:6379"),
+    EXTENSION_ID: z 
         .string()
         .regex(/^[a-z]{32}$/, "Invalid Extension ID format"),
 });
