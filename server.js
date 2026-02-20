@@ -12,14 +12,7 @@ const { redis } = require("./utils/cache");
 const ms = require("ms");
 const authMiddleware = require("./middleware/auth");
 
-app.use(
-    cors({
-        origin: [
-            `chrome-extension://${env.EXTENSION_ID}`,
-            `moz-extension://${env.EXTENSION_ID}`,
-        ],
-    }),
-);
+app.use(cors());
 
 app.set("trust proxy", 1); // Trust the first proxy hop (e.g. Docker/Nginx/AWS) to prevent rate-limit spoofing
 
