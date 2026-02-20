@@ -22,9 +22,9 @@ const envSchema = z.object({
         .default("false"), // "true" -> true, anything else -> false
     REDIS_HOST: z.string("Invalid Redis Host").default("localhost"),
     REDIS_PORT: z.coerce.number().default(6379),
-    EXTENSION_ID: z 
+    EXTENSION_ID: z
         .string()
-        .regex(/^[a-z]{32}$/, "Invalid Extension ID format"),
+        .regex(/^[a-z]$/, "Invalid Extension ID format"),
 });
 
 const env = envSchema.safeParse(process.env);
