@@ -4,3 +4,7 @@ node_modules/
 ytdlp_output_example.json
 www.youtube.com_cookies.txt
 new_isntance.sh
+
+# Testing yt-dlp results
+temp.json
+test.js
