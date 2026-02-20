@@ -2,31 +2,16 @@ const CONFIG = require("../config/constants");
 const ms = require("ms");
 const { filesize } = require("filesize");
 
-function formatResponse(data) {
-    const videoFormatsIDs = CONFIG.VIDEO_FORMAT_IDS;
-    const audioFormatID = CONFIG.AUDIO_FORMAT_ID;
-
-    // Video Duration
-    const rawDuration =
-        data.duration ?? data.formats?.[0]?.fragments?.[0]?.rawDuration ?? null;
-    const duration = rawDuration !== null ? ms(rawDuration * 1000) : null;
-
-    // Audio Format Size
-    const rawAudioFormat = data.formats.find(
-        (format) => format.format_id === audioFormatID,
-    );
-    const audioFormatSize = rawAudioFormat
-        ? (rawAudioFormat.filesize || rawAudioFormat.filesize_approx)
-        : null;
-
-    // Video Formats Sizes
-    const videoFormatsSize = data.formats
-        .filter(
-            (format) =>
-                videoFormatsIDs.includes(format.format_id) &&
+function extractVideoSizes(data, videoFormatIDs) {
+    const formats = data.formats || [];
+    return formats
+        .filter((format) => {
+            return (
+                videoFormatIDs.includes(format.format_id) &&
                 format.height &&
-                (format.filesize || format.filesize_approx),
-        )
+                (format.filesize || format.filesize_approx)
+            );
+        })
         .map((format) => {
             return {
                 format_id: format.format_id,
@@ -34,13 +19,38 @@ function formatResponse(data) {
                 filesize: format.filesize ?? format.filesize_approx,
             };
         });
+}
+
+function extractAudioSize(data, audioFormatID) {
+    const formats = data.formats || [];
+    const rawAudioFormat = formats.find(
+        (format) => format.format_id === audioFormatID,
+    );
+    return rawAudioFormat
+        ? rawAudioFormat.filesize || rawAudioFormat.filesize_approx
+        : null;
+}
+
+function extractDuration(data) {
+    return data.duration ?? data.formats?.[0]?.fragments?.[0]?.rawDuration ?? null;
+}
+
+function formatResponse(data) {
+    const duration = extractDuration(data);
+
+    const audioSize = extractAudioSize(data, CONFIG.AUDIO_FORMAT_ID);
+
+    let videoSizes = extractVideoSizes(data, CONFIG.VIDEO_FORMAT_IDS);
+    if (videoSizes.length === 0) {
+        videoSizes = extractVideoSizes(data, CONFIG.FALLBACK_VIDEO_FORMAT_IDS);
+    }
 
     return {
         id: data.id,
         title: data.title,
         duration: duration,
-        audioFormat: audioFormatSize,
-        videoFormats: videoFormatsSize,
+        audioFormat: audioSize,
+        videoFormats: videoSizes,
     };
 }
 
@@ -54,6 +64,9 @@ function humanizeSizes(data) {
                 format.filesize = filesize(format.filesize);
             }
         });
+    }
+    if (data.duration) {
+        data.duration = ms(data.duration * 1000);
     }
 }
 
