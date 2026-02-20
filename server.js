@@ -40,7 +40,7 @@ app.use(limiter);
 app.use(pinoHttp);
 
 // Routes
-app.use("/api", authMiddleware, apiRoutes);
+app.use("/api", apiRoutes);
 
 app.get("/health", (req, res) => {
     res.json({
