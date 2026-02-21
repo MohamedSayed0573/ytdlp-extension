@@ -7,10 +7,8 @@ function getYTDLPVersion() {
         });
         return stdout.trim();
     } catch (error) {
-        require("../utils/logger").error(
-            "Error fetching yt-dlp version:",
-            error,
-        );
+        const { logger } = require("../utils/logger");
+        logger.error("Error fetching yt-dlp version:", error);
         return "Unknown";
     }
 }
