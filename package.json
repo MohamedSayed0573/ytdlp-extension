@@ -5,7 +5,8 @@
     "main": "index.js",
     "scripts": {
         "build": "esbuild popup.js background.js --bundle --platform=browser --target=chrome90 --format=iife --outdir=dist --define:__API_URL__='\"https://api.mohammedsayed.dev\"'",
-        "watch": "esbuild popup.js background.js --bundle --platform=browser --target=chrome90 --format=iife --outdir=dist --watch --define:__API_URL__='\"https://api.mohammedsayed.dev\"'"
+        "watch": "esbuild popup.js background.js --bundle --platform=browser --target=chrome90 --format=iife --outdir=dist --watch --define:__API_URL__='\"https://api.mohammedsayed.dev\"'",
+        "pack": "npm run build && zip -r extension.zip manifest.json popup.html background.js dist"
     },
     "keywords": [],
     "author": "",

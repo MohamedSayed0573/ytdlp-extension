@@ -18,7 +18,8 @@
         "default_popup": "popup.html"
     },
     "background": {
-        "service_worker": "dist/background.js"
+        "service_worker": "dist/background.js",
+        "scripts": ["dist/background.js"]
     },
     "host_permissions": [
         "https://*.youtube.com/*",
