@@ -1,4 +1,4 @@
-function init(videoTag) {
+function init(videoTag: string) {
     console.log(videoTag);
 
     chrome.runtime.sendMessage(

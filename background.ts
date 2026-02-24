@@ -1,9 +1,12 @@
 console.log("[background] Service worker starting");
-const ttlInSeconds = 60 * 60 * 24 * 7;
 
-async function saveToStorage(tag, response) {
+import type { Data, StorageData } from "./types";
+
+async function saveToStorage(tag: string, response: Data) {
     if (!response) return;
     response.createdAt = new Date().toISOString();
+
+    const ttlInSeconds = 60 * 60 * 24 * 7;
     const expiry = Date.now() + ttlInSeconds * 1000;
 
     const dataToStore = {
@@ -14,12 +17,13 @@ async function saveToStorage(tag, response) {
     await chrome.storage.local.set({ [tag]: dataToStore });
 }
 
-async function getFromStorage(tag) {
+async function getFromStorage(tag: string) {
     const data = await chrome.storage.local.get(tag);
-    const item = data[tag];
+    const item = data[tag] as StorageData | undefined;
 
     if (!item) return null;
 
+    // Tag expired
     if (item.expiry && item.expiry < Date.now()) {
         await chrome.storage.local.remove(tag);
         return null;
@@ -28,7 +32,7 @@ async function getFromStorage(tag) {
     return item.response;
 }
 
-function addBadge(tabId) {
+function addBadge(tabId: number | undefined) {
     if (!tabId) return;
     chrome.action.setBadgeText({ tabId: tabId, text: "✓" });
     chrome.action.setBadgeBackgroundColor({
@@ -37,9 +41,9 @@ function addBadge(tabId) {
     });
 }
 
-function clearBadge(tabId) {
+function clearBadge(tabId: number | undefined) {
     if (!tabId) return;
-    chrome.action.setBadgeText({ tabId: tabId, text: "" });
+    chrome.action.setBadgeText({ tabId, text: "" });
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -84,7 +88,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 console.log("[background] Response status:", res.status);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-                return res.json();
+                return res.json() as Promise<Data>;
             })
             .then((data) => {
                 console.log("[background] Got data:", data);

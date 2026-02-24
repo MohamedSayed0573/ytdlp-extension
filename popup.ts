@@ -1,23 +1,24 @@
-const statusEl = document.getElementById("status");
-const durationDisplay = document.getElementById("duration-display");
-const titleDisplay = document.getElementById("title-display");
-const audioDisplay = document.getElementById("audio-display");
+const statusEl = document.getElementById("status")!;
+const durationDisplay = document.getElementById("duration-display")!;
+const titleDisplay = document.getElementById("title-display")!;
+const audioDisplay = document.getElementById("audio-display")!;
 
+import type { Data, ApiResponse } from "./types";
 import ms from "ms";
 
-function showError(msg) {
+function showError(msg: string) {
     console.error("[popup] Error:", msg);
     statusEl.textContent = `Error: ${msg}`;
     statusEl.className = "error";
 }
 
-function showInfo(msg) {
+function showInfo(msg: string) {
     console.log("[popup] Info:", msg);
     statusEl.textContent = msg;
     statusEl.className = "info";
 }
 
-function displayVideoInfo(data) {
+function displayVideoInfo(data: Data) {
     try {
         if (!data) {
             showError("Missing video data");
@@ -65,15 +66,19 @@ function displayVideoInfo(data) {
             showError("No video formats found");
         }
     } catch (e) {
-        console.error("[popup] Error displaying data:", e.message);
-        showError("Failed to display video data: " + e.message);
+        if (e instanceof Error) {
+            console.error("[popup] Error displaying data:", e.message);
+            showError("Failed to display video data: " + e.message);
+        }
     }
 }
 
-function extractVideoTag(url) {
+function extractVideoTag(url: string | undefined) {
+    if (!url) return;
+
     const parsedUrl = new URL(url);
     const videoTag = parsedUrl.searchParams.get("v");
-    if (!videoTag) return null;
+    if (!videoTag) return;
 
     const regex = /^[a-zA-Z0-9_-]{11}$/;
     if (!regex.test(videoTag)) {
@@ -82,20 +87,19 @@ function extractVideoTag(url) {
     return videoTag;
 }
 
-function isYoutubeVideo(url) {
+function isYoutubeVideo(url: string | undefined) {
+    if (!url) return false;
     return new URL(url).hostname.includes("youtube.com");
 }
 
-function showCachedNote(createdAt) {
-    const now = new Date();
-    const createdDate = new Date(createdAt);
-    const diff = now - createdDate;
-    const humanAgo = ms(diff) + " ago";
-    console.log("[popup] Video info cached", humanAgo);
+function showCachedNote(createdAt: string | undefined) {
+    if (!createdAt) return;
+    const timeAgo = ms(new Date().getTime() - new Date(createdAt).getTime());
+    console.log("[popup] Video info cached", timeAgo);
 
     const note = document.createElement("div");
     note.className = "cached-note";
-    note.textContent = `Cached ${humanAgo}`;
+    note.textContent = `Cached ${timeAgo} ago`;
     statusEl.prepend(note);
 }
 
@@ -120,7 +124,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
 
     chrome.runtime.sendMessage(
         { type: "sendYoutubeUrl", value: tag, tabId: tab.id },
-        (response) => {
+        (response: ApiResponse) => {
             if (response?.success) {
                 displayVideoInfo(response.data);
                 if (response.cached) {
