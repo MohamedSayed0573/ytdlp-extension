@@ -83,12 +83,18 @@ function isYoutubeVideo(url: string) {
 
 function showCachedNote(createdAt: string | undefined) {
     if (!createdAt) return;
-    const timeAgo = ms(new Date().getTime() - new Date(createdAt).getTime());
-    console.log("[popup] Video info cached", timeAgo);
 
     const note = document.createElement("div");
     note.className = "cached-note";
-    note.textContent = `Cached ${timeAgo} ago`;
+
+    const timeInMS = new Date().getTime() - new Date(createdAt).getTime();
+    if (timeInMS < 5000) {
+        note.textContent = "Just now";
+    } else {
+        const timeAgo = ms(timeInMS);
+        note.textContent = `Cached ${timeAgo} ago`;
+    }
+    console.log("[popup] Video info cached", note.textContent);
     statusEl.prepend(note);
 }
 
