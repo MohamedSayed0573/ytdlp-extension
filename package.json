@@ -5,7 +5,7 @@
     "main": "server.js",
     "scripts": {
         "build": "npx tsc",
-        "start": "npm run build && node dist/server.js",
+        "start": "npm run build && node --inspect=0.0.0.0:9229 dist/server.js",
         "dev": "nodemon --watch '**/*.ts' --exec 'npx tsc && node dist/server.js' | pino-pretty"
     },
     "keywords": [],

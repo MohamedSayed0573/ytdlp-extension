@@ -7,6 +7,7 @@ services:
         container_name: yt-dlp-api-staging
         ports:
             - "3001:3000"
+            - "9229:9229"
         restart: always
         environment:
             - NODE_ENV=staging
