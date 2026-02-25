@@ -2,10 +2,7 @@ import CONFIG from "../config/constants";
 import ms from "ms";
 import { filesize } from "filesize";
 
-function extractVideoSizes(
-    data: RawDataFormat,
-    videoFormatIDs: readonly string[],
-) {
+function extractVideoSizes(data: RawDataFormat, videoFormatIDs: readonly string[]) {
     const formats = data.formats || [];
     return formats
         .filter((format: any) => {
@@ -17,7 +14,7 @@ function extractVideoSizes(
         })
         .map((format: any) => {
             return {
-                format_id: format.format_id,
+                formatId: format.format_id,
                 height: format.height,
                 size: format.filesize ?? format.filesize_approx,
             };
@@ -26,18 +23,12 @@ function extractVideoSizes(
 
 function extractAudioSize(data: RawDataFormat, audioFormatID: string) {
     const formats = data.formats || [];
-    const rawAudioFormat = formats.find(
-        (format: any) => format.format_id === audioFormatID,
-    );
-    return rawAudioFormat
-        ? rawAudioFormat.filesize || rawAudioFormat.filesize_approx
-        : null;
+    const rawAudioFormat = formats.find((format: any) => format.format_id === audioFormatID);
+    return rawAudioFormat ? rawAudioFormat.filesize || rawAudioFormat.filesize_approx : null;
 }
 
 function extractDuration(data: RawDataFormat) {
-    return (
-        data.duration ?? data.formats?.[0]?.fragments?.[0]?.rawDuration ?? null
-    );
+    return data.duration ?? data.formats?.[0]?.fragments?.[0]?.rawDuration ?? null;
 }
 
 type RawDataFormat = {
@@ -61,7 +52,7 @@ export type Data = {
     duration: number | null;
     audioFormat: number | null;
     videoFormats: {
-        format_id: string;
+        formatId: string;
         height: number;
         size: number;
     }[];
@@ -73,21 +64,22 @@ export type HumanizedData = {
     duration: string;
     audioFormat: string;
     videoFormats: {
-        format_id: string;
+        formatId: string;
         height: number;
         size: string;
     }[];
 };
 
 export function formatResponse(data: RawDataFormat): Data {
+    const primaryFormats = extractVideoSizes(data, CONFIG.VIDEO_FORMAT_IDS);
     return {
         id: data.id,
         title: data.title,
         duration: extractDuration(data) || null,
         audioFormat: extractAudioSize(data, CONFIG.AUDIO_FORMAT_ID) || null,
         videoFormats:
-            extractVideoSizes(data, CONFIG.VIDEO_FORMAT_IDS).length > 0
-                ? extractVideoSizes(data, CONFIG.VIDEO_FORMAT_IDS)
+            primaryFormats.length > 0
+                ? primaryFormats
                 : extractVideoSizes(data, CONFIG.FALLBACK_VIDEO_FORMAT_IDS),
     };
 }

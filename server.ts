@@ -15,6 +15,7 @@ import CONFIG from "./config/constants";
 
 const app = express();
 
+// Extension ID changes everytime I test it. Will add cors when I publish it
 app.use(cors());
 
 app.set("trust proxy", 1); // Trust the first proxy hop (e.g. Docker/Nginx/AWS) to prevent rate-limit spoofing
@@ -57,8 +58,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     req.log.error(err);
 
     const status = err instanceof AppError ? err.statusCode : 500;
-    const message =
-        err instanceof AppError ? err.message : "Internal Server Error";
+    const message = err instanceof AppError ? err.message : "Internal Server Error";
 
     if (env.NODE_ENV === "production") {
         res.status(status).json({
@@ -98,9 +98,7 @@ async function gracefulShutdown(signal: string) {
     });
 
     setTimeout(() => {
-        logger.info(
-            `Could not close connections in time, forcefully shutting down`,
-        );
+        logger.info(`Could not close connections in time, forcefully shutting down`);
         process.exit(1);
     }, CONFIG.SHUTDOWN_TIMEOUT_MS);
 }

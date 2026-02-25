@@ -1,7 +1,13 @@
 import z from "zod";
 import dotenv from "dotenv";
+const envFile =
+    process.env.NODE_ENV === "staging"
+        ? ".env.staging"
+        : process.env.NODE_ENV === "production"
+          ? ".env.prod"
+          : ".env";
 dotenv.config({
-    path: ".env.prod",
+    path: envFile,
     quiet: true,
 });
 
@@ -9,26 +15,14 @@ const envSchema = z.object({
     PORT: z.coerce
         .number() // Coerces "3000" -> 3000
         .default(3000), // Default is a number
-    NODE_ENV: z
-        .enum(["development", "production", "staging"])
-        .default("development"),
-    // Without nonemptry, Zod would accept "".
-    API_KEY: z
-        .string()
-        .min(10, "API_KEY must be at least 10 characters long")
-        .regex(
-            /^[a-zA-Z0-9_\-=+@!#$%^&*();:.,?><'"|{}\[\]]+$/,
-            "Invalid characters in API key",
-        ),
+    NODE_ENV: z.enum(["development", "production", "staging"]).default("development"),
     REDIS_ENABLED: z
         .string()
         .transform((val: string) => val.toLowerCase() === "true")
         .default(false), // "true" -> true, anything else -> false
     REDIS_HOST: z.string("Invalid Redis Host").default("localhost"),
     REDIS_PORT: z.coerce.number().default(6379),
-    EXTENSION_ID: z
-        .string()
-        .regex(/^[a-zA-Z0-9_\-@.]+$/, "Invalid Extension ID format"),
+    EXTENSION_ID: z.string().regex(/^[a-zA-Z0-9_\-@.]+$/, "Invalid Extension ID format"),
 });
 
 const env = envSchema.safeParse(process.env);

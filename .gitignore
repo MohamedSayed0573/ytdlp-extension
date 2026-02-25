@@ -5,7 +5,7 @@ node_modules/
 *.md
 ytdlp_output_example.json
 www.youtube.com_cookies.txt
-new_isntance.sh
+new_instance.sh
 dist/
 
 # Testing yt-dlp results

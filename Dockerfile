@@ -25,7 +25,7 @@ CMD ["npm", "start"]
 
 # --- Staging Stage ---
 FROM base AS staging
-RUN npm install
+RUN npm ci
 COPY . .
 ENV NODE_ENV=staging
 ENV PORT=3000
