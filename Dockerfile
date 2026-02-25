@@ -16,7 +16,7 @@ CMD ["npm", "run", "dev"]
 
 # --- Production Stage ---
 FROM base AS prod
-RUN npm ci --omit=dev
+RUN npm ci
 COPY . .
 ENV NODE_ENV=production
 ENV PORT=3000
