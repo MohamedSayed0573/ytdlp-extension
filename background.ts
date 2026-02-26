@@ -99,7 +99,7 @@ chrome.runtime.onMessage.addListener(
                         success: false,
                         data: null,
                         cached: false,
-                        message: apiErr,
+                        message: apiErr instanceof Error ? apiErr.message : "Unknown error",
                     });
                 }
             }
