@@ -12,6 +12,7 @@ chrome.runtime.onMessage.addListener(
             type: string;
             tag: string;
             tabId: number;
+            html: string;
         },
         sender,
         sendResponse,
@@ -53,7 +54,10 @@ chrome.runtime.onMessage.addListener(
 
             // Cache Miss
             try {
-                const data = await fetchVideoData(tag);
+                const data = message.html
+                    ? extractYtInitial(message.html)
+                    : await fetchVideoData(tag);
+
                 const formattedData = await formatVideoResponse(data);
                 saveToStorage(tag, formattedData);
                 addBadge(tabId);
@@ -61,6 +65,7 @@ chrome.runtime.onMessage.addListener(
                     success: true,
                     data: formattedData,
                     cached: false,
+                    api: false,
                 });
             } catch (err) {
                 try {
@@ -72,6 +77,7 @@ chrome.runtime.onMessage.addListener(
                         success: true,
                         data: apiData,
                         cached: false,
+                        api: true,
                     });
                 } catch (apiErr) {
                     clearBadge(tabId);
@@ -94,16 +100,18 @@ const VIDEO_ITAGS = [394, 395, 396, 397, 398, 399];
 const AUDIO_ITAG = 251;
 
 async function fetchVideoData(videoTag: string) {
-    let res;
     try {
-        res = await fetch(`https://www.youtube.com/watch?v=${videoTag}`);
+        const res = await fetch(`https://www.youtube.com/watch?v=${videoTag}`);
+        const fetchedHtml = await res.text();
+        return extractYtInitial(fetchedHtml);
     } catch (err) {
         console.error(err);
         throw err;
     }
-    const htmlText = await res.text();
-    const match = htmlText.match(/ytInitialPlayerResponse\s*=\s*(\{.+?\});/);
-    //console.log(match[1]);
+}
+
+function extractYtInitial(html: string) {
+    const match = html.match(/ytInitialPlayerResponse\s*=\s*(\{.+?\});/);
     if (!match || !match[1]) throw new Error("No match found");
 
     try {
@@ -115,6 +123,7 @@ async function fetchVideoData(videoTag: string) {
         throw e;
     }
 }
+
 async function formatVideoResponse(data: any): Promise<HumanizedFormat> {
     if (!data || !data.videoDetails || !data.streamingData || !data.streamingData.adaptiveFormats)
         throw new Error("No data found");
