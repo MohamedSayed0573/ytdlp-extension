@@ -1,15 +1,24 @@
 import { extractVideoTag } from "./utils";
 
 function init(videoTag: string) {
-    console.log(videoTag);
-    const fullHTML = document.documentElement.outerHTML;
-    console.log(`[CONTENT.TS] Full HTML: ${fullHTML}`);
+    const scriptsArray = Array.from(document.scripts);
+    const ytInitialPlayerResponse = scriptsArray.find((script) => {
+        return script.textContent?.includes("ytInitialPlayerResponse");
+    });
+
+    console.log(
+        `[CONTENT.TS] parse ytInitial before sending to background:`,
+        ytInitialPlayerResponse?.textContent ? true : false,
+    );
+
+    const scriptContent =
+        ytInitialPlayerResponse?.textContent || document.documentElement.outerHTML;
 
     chrome.runtime.sendMessage(
         {
             type: "sendYoutubeUrl",
             tag: videoTag,
-            html: fullHTML,
+            html: scriptContent,
         },
         (response) => {
             console.log(response);
