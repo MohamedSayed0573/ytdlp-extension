@@ -11,7 +11,8 @@ chrome.runtime.onMessage.addListener(
         message: {
             type: string;
             tag: string;
-            tabId: number;
+            tabId?: number;
+            html?: string;
         },
         sender,
         sendResponse,
@@ -53,7 +54,21 @@ chrome.runtime.onMessage.addListener(
 
             // Cache Miss
             try {
-                const data = await fetchVideoData(tag);
+                let data;
+                if (message.html) {
+                    try {
+                        data = extractYtInitial(message.html);
+                    } catch (err) {
+                        data = await fetchVideoData(tag);
+                        console.error(
+                            "[background]: Failed to parse html from content script, fetching...",
+                            err,
+                        );
+                    }
+                } else {
+                    data = await fetchVideoData(tag);
+                }
+
                 const formattedData = await formatVideoResponse(data);
                 saveToStorage(tag, formattedData);
                 addBadge(tabId);
@@ -61,10 +76,11 @@ chrome.runtime.onMessage.addListener(
                     success: true,
                     data: formattedData,
                     cached: false,
+                    api: false,
                 });
             } catch (err) {
                 try {
-                    console.log("[background] Scrape failed, trying API", err);
+                    console.error("[background] Scrape failed, trying API", err);
                     const apiData = await fetchAPI(tag);
                     saveToStorage(tag, apiData);
                     addBadge(tabId);
@@ -72,6 +88,7 @@ chrome.runtime.onMessage.addListener(
                         success: true,
                         data: apiData,
                         cached: false,
+                        api: true,
                     });
                 } catch (apiErr) {
                     clearBadge(tabId);
@@ -80,7 +97,7 @@ chrome.runtime.onMessage.addListener(
                         success: false,
                         data: null,
                         cached: false,
-                        message: apiErr,
+                        message: apiErr instanceof Error ? apiErr.message : "Unknown error",
                     });
                 }
             }
@@ -94,16 +111,14 @@ const VIDEO_ITAGS = [394, 395, 396, 397, 398, 399];
 const AUDIO_ITAG = 251;
 
 async function fetchVideoData(videoTag: string) {
-    let res;
-    try {
-        res = await fetch(`https://www.youtube.com/watch?v=${videoTag}`);
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-    const htmlText = await res.text();
-    const match = htmlText.match(/ytInitialPlayerResponse\s*=\s*(\{.+?\});/);
-    //console.log(match[1]);
+    const res = await fetch(`https://www.youtube.com/watch?v=${videoTag}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const fetchedHtml = await res.text();
+    return extractYtInitial(fetchedHtml);
+}
+
+function extractYtInitial(html: string) {
+    const match = html.match(/ytInitialPlayerResponse\s*=\s*(\{.+?\});/s);
     if (!match || !match[1]) throw new Error("No match found");
 
     try {
@@ -115,6 +130,7 @@ async function fetchVideoData(videoTag: string) {
         throw e;
     }
 }
+
 async function formatVideoResponse(data: any): Promise<HumanizedFormat> {
     if (!data || !data.videoDetails || !data.streamingData || !data.streamingData.adaptiveFormats)
         throw new Error("No data found");

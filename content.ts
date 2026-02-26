@@ -1,12 +1,20 @@
 import { extractVideoTag } from "./utils";
 
 function init(videoTag: string) {
-    console.log(videoTag);
+    const scriptsArray = Array.from(document.scripts);
+    const ytInitialPlayerResponse = scriptsArray.find((script) => {
+        return script.textContent?.includes("ytInitialPlayerResponse");
+    });
+
+    const scriptContent = ytInitialPlayerResponse?.textContent;
+
+    console.log(`[CONTENT.TS] parse ytInitial before sending to background:`, !!scriptContent);
 
     chrome.runtime.sendMessage(
         {
             type: "sendYoutubeUrl",
             tag: videoTag,
+            html: scriptContent,
         },
         (response) => {
             console.log(response);
