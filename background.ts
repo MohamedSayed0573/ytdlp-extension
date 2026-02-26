@@ -58,18 +58,16 @@ chrome.runtime.onMessage.addListener(
                 if (message.html) {
                     try {
                         data = extractYtInitial(message.html);
+                        console.log("[background]: Used html scraping method");
                     } catch (err) {
-                        console.error(err);
+                        console.error("[background] HTML extraction failed, falling back to fetchVideoData:", err);
+                        data = await fetchVideoData(tag);
+                        console.log("[background]: Used background fetch scraping method");
                     }
                 } else {
                     data = await fetchVideoData(tag);
+                    console.log("[background]: Used background fetch scraping method");
                 }
-
-                console.log(
-                    !!message.html
-                        ? "[background]: Used html scraping method"
-                        : "[background]: Used api method",
-                );
 
                 const formattedData = await formatVideoResponse(data);
                 saveToStorage(tag, formattedData);
@@ -120,7 +118,7 @@ async function fetchVideoData(videoTag: string) {
 }
 
 function extractYtInitial(html: string) {
-    const match = html.match(/ytInitialPlayerResponse\s*=\s*(\{.+?\});/);
+    const match = html.match(/ytInitialPlayerResponse\s*=\s*(\{[\s\S]+?\});/);
     if (!match || !match[1]) throw new Error("No match found");
 
     try {

@@ -11,14 +11,19 @@ function init(videoTag: string) {
         !!ytInitialPlayerResponse?.textContent,
     );
 
-    const scriptContent =
-        ytInitialPlayerResponse?.textContent || document.documentElement.outerHTML;
+    if (!ytInitialPlayerResponse?.textContent) {
+        console.warn(
+            "[CONTENT.TS] ytInitialPlayerResponse script not found; skipping html in message.",
+        );
+    }
 
     chrome.runtime.sendMessage(
         {
             type: "sendYoutubeUrl",
             tag: videoTag,
-            html: scriptContent,
+            ...(ytInitialPlayerResponse?.textContent
+                ? { html: ytInitialPlayerResponse.textContent }
+                : {}),
         },
         (response) => {
             console.log(response);
