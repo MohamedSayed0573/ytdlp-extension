@@ -44,7 +44,7 @@ app.get("/health", (req: Request, res: Response) => {
         status: "ok",
         uptime: ms(Math.round(process.uptime()) * 1000),
         timestamp: new Date().toISOString(),
-        redisStatus: redis.status,
+        redisStatus: redis.isReady ? "ready" : redis.isOpen ? "connecting" : "closed",
         ytdlpVersion: CONFIG.YTDLP_VERSION,
     });
 });
@@ -77,7 +77,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 const server = app.listen(env.PORT, async () => {
     if (env.REDIS_ENABLED) {
-        if (redis.status === "ready" || redis.status === "connecting") {
+        if (redis.isReady || redis.isOpen) {
             logger.info("Redis connection initialized");
         } else {
             logger.warn("Redis is not ready, caching may be disabled");
