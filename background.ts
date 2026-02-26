@@ -11,8 +11,8 @@ chrome.runtime.onMessage.addListener(
         message: {
             type: string;
             tag: string;
-            tabId: number;
-            html: string;
+            tabId?: number;
+            html?: string;
         },
         sender,
         sendResponse,
@@ -54,9 +54,22 @@ chrome.runtime.onMessage.addListener(
 
             // Cache Miss
             try {
-                const data = message.html
-                    ? extractYtInitial(message.html)
-                    : await fetchVideoData(tag);
+                let data;
+                if (message.html) {
+                    try {
+                        data = extractYtInitial(message.html);
+                    } catch (err) {
+                        console.error(err);
+                    }
+                } else {
+                    data = await fetchVideoData(tag);
+                }
+
+                console.log(
+                    !!message.html
+                        ? "[background]: Used html scraping method"
+                        : "[background]: Used api method",
+                );
 
                 const formattedData = await formatVideoResponse(data);
                 saveToStorage(tag, formattedData);
@@ -100,14 +113,10 @@ const VIDEO_ITAGS = [394, 395, 396, 397, 398, 399];
 const AUDIO_ITAG = 251;
 
 async function fetchVideoData(videoTag: string) {
-    try {
-        const res = await fetch(`https://www.youtube.com/watch?v=${videoTag}`);
-        const fetchedHtml = await res.text();
-        return extractYtInitial(fetchedHtml);
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
+    const res = await fetch(`https://www.youtube.com/watch?v=${videoTag}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const fetchedHtml = await res.text();
+    return extractYtInitial(fetchedHtml);
 }
 
 function extractYtInitial(html: string) {

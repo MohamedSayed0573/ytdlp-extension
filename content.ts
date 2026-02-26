@@ -8,7 +8,7 @@ function init(videoTag: string) {
 
     console.log(
         `[CONTENT.TS] parse ytInitial before sending to background:`,
-        ytInitialPlayerResponse?.textContent ? true : false,
+        !!ytInitialPlayerResponse?.textContent,
     );
 
     const scriptContent =
