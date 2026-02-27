@@ -23,11 +23,11 @@
                 justify-content: space-between;
                 align-items: center;
                 border-bottom: 1px solid #3a3a3a;
+                gap: 10px;
             }
             .title {
                 font-size: 16px;
                 font-weight: 600;
-                max-width: 220px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -36,6 +36,8 @@
                 display: flex;
                 flex-direction: column;
                 gap: 4px;
+                flex: 1;
+                min-width: 0;
             }
             .audio {
                 font-size: 12px;
@@ -44,14 +46,23 @@
             .duration {
                 font-size: 14px;
                 color: #aaa;
-                margin-left: 12px;
+                white-space: nowrap;
+                flex-shrink: 0;
             }
             #optionsBtn {
                 font-size: 14px;
-                padding: 10px 20px;
-                border: none;
+                padding: 6px 12px;
+                background: rgba(255, 255, 255, 0.05);
+                color: #fff;
+                border: 1px solid transparent;
                 border-radius: 6px;
                 cursor: pointer;
+                transition: all 0.2s;
+                flex-shrink: 0;
+            }
+            #optionsBtn:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.2);
             }
             #container {
                 padding: 20px;
@@ -118,9 +129,7 @@
                 <span class="audio"><span id="audio-display"></span></span>
             </div>
             <span class="duration" id="duration-display">--:--</span>
-            <a href="options.html">
-                <button id="optionsBtn">Options</button>
-            </a>
+            <button id="optionsBtn">Options</button>
         </div>
         <div id="container">Fetching video info… (This might take a few seconds)</div>
         <script src="dist/popup.js"></script>

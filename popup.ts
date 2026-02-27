@@ -2,6 +2,7 @@ const containerEl = document.getElementById("container")!;
 const durationDisplay = document.getElementById("duration-display")!;
 const titleDisplay = document.getElementById("title-display")!;
 const audioDisplay = document.getElementById("audio-display")!;
+const optionsBtn = document.getElementById("optionsBtn")!;
 
 import type { APIData, ApiResponse, HumanizedFormat } from "./types";
 import ms from "ms";
@@ -18,6 +19,10 @@ function showInfo(msg: string) {
     containerEl.textContent = msg;
     containerEl.className = "info";
 }
+
+optionsBtn.addEventListener("click", () => {
+    window.location.href = "options.html";
+});
 
 async function displayVideoInfo(data: APIData | HumanizedFormat) {
     try {
