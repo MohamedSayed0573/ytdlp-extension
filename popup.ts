@@ -2,7 +2,6 @@ const containerEl = document.getElementById("container")!;
 const durationDisplay = document.getElementById("duration-display")!;
 const titleDisplay = document.getElementById("title-display")!;
 const audioDisplay = document.getElementById("audio-display")!;
-const optionsButton = document.getElementById("optionsBtn")!;
 
 import type { APIData, ApiResponse, HumanizedFormat } from "./types";
 import ms from "ms";

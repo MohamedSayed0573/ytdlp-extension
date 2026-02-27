@@ -1,5 +1,4 @@
-import { loadOptions } from "./utils";
-const optionIDs = ["p144", "p240", "p360", "p480", "p720", "p1080", "p1440"];
+import { loadOptions, optionIDs } from "./utils";
 
 // If any change in options, update chrome storage
 optionIDs.forEach((option) => {
