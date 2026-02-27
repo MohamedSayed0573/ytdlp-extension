@@ -46,10 +46,14 @@
                 color: #aaa;
                 margin-left: 12px;
             }
-            .container {
-                padding: 20px;
+            #optionsBtn {
+                font-size: 14;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
             }
-            #status {
+            #container {
                 padding: 20px;
                 text-align: center;
                 color: #aaa;
@@ -98,9 +102,6 @@
                 color: #aaa;
                 font-size: 14px;
             }
-            .loading {
-                color: #aaa;
-            }
             .cached-note {
                 font-size: 12px;
                 color: #888;
@@ -117,12 +118,11 @@
                 <span class="audio"><span id="audio-display"></span></span>
             </div>
             <span class="duration" id="duration-display">--:--</span>
+            <a href="options.html">
+                <button id="optionsBtn">Options</button>
+            </a>
         </div>
-        <div class="container">
-            <div id="status" class="loading">
-                Fetching video info… (This might take a few seconds)
-            </div>
-        </div>
+        <div id="container">Fetching video info… (This might take a few seconds)</div>
         <script src="dist/popup.js"></script>
     </body>
 </html>

@@ -1,25 +1,28 @@
-const statusEl = document.getElementById("status")!;
+const containerEl = document.getElementById("container")!;
 const durationDisplay = document.getElementById("duration-display")!;
 const titleDisplay = document.getElementById("title-display")!;
 const audioDisplay = document.getElementById("audio-display")!;
+const optionsButton = document.getElementById("optionsBtn")!;
 
 import type { APIData, ApiResponse, HumanizedFormat } from "./types";
 import ms from "ms";
-import { extractVideoTag } from "./utils";
+import { extractVideoTag, loadOptions, getOptions, optionIDs } from "./utils";
+
+loadOptions();
 
 function showError(msg: string) {
     console.error("[popup] Error:", msg);
-    statusEl.textContent = `Error: ${msg}`;
-    statusEl.className = "error";
+    containerEl.textContent = `Error: ${msg}`;
+    containerEl.className = "error";
 }
 
 function showInfo(msg: string) {
     console.log("[popup] Info:", msg);
-    statusEl.textContent = msg;
-    statusEl.className = "info";
+    containerEl.textContent = msg;
+    containerEl.className = "info";
 }
 
-function displayVideoInfo(data: APIData | HumanizedFormat) {
+async function displayVideoInfo(data: APIData | HumanizedFormat) {
     try {
         if (!data) {
             showError("Missing video data");
@@ -40,15 +43,28 @@ function displayVideoInfo(data: APIData | HumanizedFormat) {
             audioDisplay.textContent = data.audioFormat;
         }
 
-        // Display only video formats
+        // Display video formats
         if (data.videoFormats && data.videoFormats.length > 0) {
-            statusEl.textContent = ""; // Clear existing content
-            statusEl.className = "";
+            containerEl.textContent = ""; // Clear existing content
 
             const section = document.createElement("div");
             section.className = "formats-section";
 
+            const options = await getOptions();
+            const enabledOptions = optionIDs.filter((optionId) => {
+                return options[optionId] === true;
+            });
+            if (enabledOptions.length === 0) {
+                showInfo("All Resolutions Disabled. Enable in options");
+                return;
+            }
+
             data.videoFormats.forEach((format) => {
+                const optionKey = "p" + format.height;
+                if (!enabledOptions.includes(optionKey)) {
+                    return;
+                }
+
                 const item = document.createElement("div");
                 item.className = "format-item";
 
@@ -61,10 +77,10 @@ function displayVideoInfo(data: APIData | HumanizedFormat) {
                 sizeDiv.textContent = format.size;
 
                 item.append(heightDiv, sizeDiv);
-                section.appendChild(item);
+                section.append(item);
             });
 
-            statusEl.appendChild(section);
+            containerEl.append(section);
         } else {
             showError("No video formats found");
         }
@@ -95,7 +111,7 @@ function showCachedNote(createdAt: string | undefined) {
         note.textContent = `Cached ${timeAgo} ago`;
     }
     console.log("[popup] Video info cached", note.textContent);
-    statusEl.prepend(note);
+    containerEl.prepend(note);
 }
 
 chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {

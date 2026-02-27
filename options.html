@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Options</title>
+        <style>
+            body {
+                width: 200px;
+            }
+            div {
+                display: inline-block;
+                width: 48%;
+            }
+            fieldset {
+                border: 1px solid #666;
+                border-radius: 4px;
+                padding: 15px;
+                margin-top: 10px;
+            }
+            #header h3 {
+                display: inline;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="header">
+            <a id="backBtn" href="popup.html">
+                <button><</button>
+            </a>
+            <h3>Options</h3>
+        </div>
+        <fieldset>
+            <legend>Choose which quality to be displayed:</legend>
+            <div>
+                <input type="checkbox" id="p144" />
+                <label for="p144">144p</label>
+            </div>
+
+            <div>
+                <input type="checkbox" id="p240" />
+                <label for="p240">240p</label>
+            </div>
+
+            <div>
+                <input type="checkbox" id="p360" />
+                <label for="p360">360p</label>
+            </div>
+
+            <div>
+                <input type="checkbox" id="p480" />
+                <label for="p480">480p</label>
+            </div>
+
+            <div>
+                <input type="checkbox" id="p720" />
+                <label for="p720">720p</label>
+            </div>
+
+            <div>
+                <input type="checkbox" id="p1080" />
+                <label for="p1080">1080p</label>
+            </div>
+
+            <div>
+                <input type="checkbox" id="p1440" />
+                <label for="p1440">1440p</label>
+            </div>
+        </fieldset>
+        <script src="dist/options.js"></script>
+    </body>
+</html>
