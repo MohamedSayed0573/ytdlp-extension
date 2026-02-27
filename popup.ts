@@ -5,9 +5,7 @@ const audioDisplay = document.getElementById("audio-display")!;
 
 import type { APIData, ApiResponse, HumanizedFormat } from "./types";
 import ms from "ms";
-import { extractVideoTag, loadOptions, getOptions, optionIDs } from "./utils";
-
-loadOptions();
+import { extractVideoTag, getOptions, optionIDs } from "./utils";
 
 function showError(msg: string) {
     console.error("[popup] Error:", msg);
@@ -51,7 +49,7 @@ async function displayVideoInfo(data: APIData | HumanizedFormat) {
 
             const options = await getOptions();
             const enabledOptions = optionIDs.filter((optionId) => {
-                return options[optionId] === true;
+                return options[optionId] ?? true;
             });
             if (enabledOptions.length === 0) {
                 showInfo("All Resolutions Disabled. Enable in options");

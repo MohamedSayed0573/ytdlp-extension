@@ -16,7 +16,7 @@ export function extractVideoTag(url: string) {
 
 export const optionIDs = ["p144", "p240", "p360", "p480", "p720", "p1080", "p1440"];
 
-// Load options when you open the popup
+// Load the options page
 export async function loadOptions() {
     const options = await chrome.storage.sync.get(optionIDs);
     optionIDs.forEach((optionId) => {
@@ -25,6 +25,7 @@ export async function loadOptions() {
     });
 }
 
+// Return the user options
 export async function getOptions() {
     return await chrome.storage.sync.get(optionIDs);
 }
