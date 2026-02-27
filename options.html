@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Options</title>
+        <meta charset="UTF-8" />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                width: 350px;
+                background: #2a2a2a;
+                padding: 0;
+                color: #fff;
+            }
+            .header {
+                background: #1a1a1a;
+                padding: 15px 20px;
+                display: flex;
+                align-items: center;
+                border-bottom: 1px solid #3a3a3a;
+                gap: 15px;
+            }
+            .header h3 {
+                font-size: 16px;
+                font-weight: 600;
+                color: #fff;
+            }
+            #backBtn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255, 255, 255, 0.05);
+                color: #fff;
+                border: 1px solid transparent;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.2s;
+                padding: 6px 12px;
+                font-size: 14px;
+                text-decoration: none;
+            }
+            #backBtn:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+            .container {
+                padding: 20px;
+            }
+            .description {
+                color: #aaa;
+                font-size: 14px;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+            .options-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .option-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: rgba(255, 255, 255, 0.05);
+                padding: 12px;
+                border-radius: 6px;
+                cursor: pointer;
+                border: 1px solid transparent;
+                transition: all 0.2s;
+            }
+            .option-item:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+            /* Custom Checkbox */
+            input[type="checkbox"] {
+                appearance: none;
+                background-color: #1a1a1a;
+                border: 2px solid #555;
+                width: 18px;
+                height: 18px;
+                border-radius: 4px;
+                cursor: pointer;
+                position: relative;
+                flex-shrink: 0;
+            }
+            input[type="checkbox"]:checked {
+                background-color: #4dabf7;
+                border-color: #4dabf7;
+            }
+            input[type="checkbox"]:checked::after {
+                content: "";
+                position: absolute;
+                left: 5px;
+                top: 2px;
+                width: 4px;
+                height: 8px;
+                border: solid white;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+            }
+            .option-label {
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+                color: #fff;
+                flex: 1;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <a id="backBtn" href="popup.html">&larr; Back</a>
+            <h3>Options</h3>
+        </div>
+        <div class="container">
+            <div class="description">Select which resolutions to display:</div>
+            <div class="options-grid">
+                <label class="option-item">
+                    <input type="checkbox" id="p144" />
+                    <span class="option-label">144p</span>
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" id="p240" />
+                    <span class="option-label">240p</span>
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" id="p360" />
+                    <span class="option-label">360p</span>
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" id="p480" />
+                    <span class="option-label">480p</span>
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" id="p720" />
+                    <span class="option-label">720p</span>
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" id="p1080" />
+                    <span class="option-label">1080p</span>
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" id="p1440" />
+                    <span class="option-label">1440p</span>
+                </label>
+            </div>
+        </div>
+        <script src="dist/options.js"></script>
+    </body>
+</html>
