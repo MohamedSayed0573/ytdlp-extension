@@ -2,7 +2,7 @@ console.log("[background] Service worker starting");
 
 import ms from "ms";
 import { filesize } from "filesize";
-import type { APIData, HumanizedFormat, RawFormat } from "./types";
+import type { APIData, HumanizedFormat, RawData, RawFormat } from "./types";
 import { getFromStorage, saveToStorage } from "./cache";
 import { addBadge, clearBadge } from "./badge";
 
@@ -48,6 +48,7 @@ chrome.runtime.onMessage.addListener(
                     success: true,
                     data: cached,
                     cached: true,
+                    createdAt: cached.createdAt,
                 });
                 return;
             }
@@ -69,7 +70,9 @@ chrome.runtime.onMessage.addListener(
                     data = await fetchVideoData(tag);
                 }
 
-                const formattedData = await formatVideoResponse(data);
+                const rawFormats = formatVideoResponse(data);
+                const formattedData = humanizeData(rawFormats);
+
                 saveToStorage(tag, formattedData);
                 addBadge(tabId);
                 sendResponse({
@@ -117,34 +120,28 @@ async function fetchVideoData(videoTag: string) {
     return extractYtInitial(fetchedHtml);
 }
 
-function extractYtInitial(html: string) {
+function extractYtInitial(html: string): RawData {
     const match = html.match(/ytInitialPlayerResponse\s*=\s*(\{.+?\});/s);
     if (!match || !match[1]) throw new Error("No match found");
-
-    try {
-        const data = JSON.parse(match[1]);
-        if (!data) throw new Error("No data found");
-        return data;
-    } catch (e) {
-        console.error("Failed to parse JSON", e);
-        throw e;
-    }
+    const data = JSON.parse(match[1]);
+    if (!data) throw new Error("No data found");
+    return data;
 }
 
-async function formatVideoResponse(data: any): Promise<HumanizedFormat> {
+function formatVideoResponse(data: RawData): RawFormat {
     if (!data || !data.videoDetails || !data.streamingData || !data.streamingData.adaptiveFormats)
         throw new Error("No data found");
 
-    const result: RawFormat = {
+    return {
         id: data.videoDetails.videoId,
         title: data.videoDetails.title,
         author: data.videoDetails.author,
-        duration: data.streamingData.adaptiveFormats[0].approxDurationMs,
+        duration: data.videoDetails.lengthSeconds,
         formats: data.streamingData.adaptiveFormats
-            .filter((format: any) => {
+            .filter((format) => {
                 return VIDEO_ITAGS.includes(format.itag);
             })
-            .map((format: any) => {
+            .map((format) => {
                 return {
                     formatId: format.itag,
                     height: format.height,
@@ -152,29 +149,30 @@ async function formatVideoResponse(data: any): Promise<HumanizedFormat> {
                 };
             }),
         audioFormats: data.streamingData.adaptiveFormats
-            .filter((format: any) => {
+            .filter((format) => {
                 return format.itag === AUDIO_ITAG;
             })
-            .map((format: any) => {
+            .map((format) => {
                 return {
                     formatId: format.itag,
                     size: parseInt(format.contentLength || "0"),
                 };
             }),
     };
+}
 
-    const audioSize = getAverageAudioSize(result.audioFormats);
-    const mergedFormats = mergeAudioWithVideo(result.formats, audioSize);
+function humanizeData(formats: RawFormat): HumanizedFormat {
+    const audioSize = getAverageAudioSize(formats.audioFormats);
+    const mergedFormats = mergeAudioWithVideo(formats.formats, audioSize);
     const humanizedFormats = humanizeVideoFormats(mergedFormats);
 
-    const final: HumanizedFormat = {
-        id: result.id,
-        title: result.title,
-        author: result.author,
-        duration: ms(parseInt(result.duration || "0")),
+    return {
+        id: formats.id,
+        title: formats.title,
+        author: formats.author,
+        duration: ms(parseInt(formats.duration || "0") * 1000),
         videoFormats: humanizedFormats,
     };
-    return final;
 }
 
 function humanizeVideoFormats(formats: RawFormat["formats"]) {

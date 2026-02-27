@@ -4,7 +4,7 @@ const titleDisplay = document.getElementById("title-display")!;
 const audioDisplay = document.getElementById("audio-display")!;
 const optionsBtn = document.getElementById("optionsBtn")!;
 
-import type { APIData, ApiResponse, HumanizedFormat } from "./types";
+import type { APIData, BackgroundResponse, HumanizedFormat } from "./types";
 import ms from "ms";
 import { extractVideoTag, getOptions, optionIDs } from "./utils";
 
@@ -139,11 +139,11 @@ chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
 
     chrome.runtime.sendMessage(
         { type: "sendYoutubeUrl", tag, tabId: tab.id },
-        (response: ApiResponse) => {
+        (response: BackgroundResponse) => {
             if (response?.success) {
                 displayVideoInfo(response.data);
                 if (response.cached) {
-                    showCachedNote(response.data.createdAt);
+                    showCachedNote(response.createdAt);
                 }
             } else {
                 showError(response?.message || "Unknown error - check console");

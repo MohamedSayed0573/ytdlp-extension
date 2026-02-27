@@ -2,7 +2,6 @@ import { APIData, HumanizedFormat, StorageData } from "./types";
 
 export async function saveToStorage(tag: string, response: APIData | HumanizedFormat | null) {
     if (!response) return;
-    response.createdAt = new Date().toISOString();
 
     const ttlInSeconds = 60 * 60 * 24 * 7;
     const expiry = Date.now() + ttlInSeconds * 1000;
@@ -10,6 +9,7 @@ export async function saveToStorage(tag: string, response: APIData | HumanizedFo
     const dataToStore = {
         response,
         expiry,
+        createdAt: new Date().toISOString(),
     };
 
     await chrome.storage.local.set({
@@ -17,7 +17,7 @@ export async function saveToStorage(tag: string, response: APIData | HumanizedFo
     });
 }
 
-export async function getFromStorage(tag: string) {
+export async function getFromStorage(tag: string): Promise<StorageData | null> {
     const data = await chrome.storage.local.get(tag);
     const item = data[tag] as StorageData | undefined;
 
@@ -29,5 +29,5 @@ export async function getFromStorage(tag: string) {
         return null;
     }
 
-    return item.response;
+    return item;
 }

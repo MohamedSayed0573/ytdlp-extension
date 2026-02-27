@@ -11,18 +11,34 @@ export type APIData = {
     createdAt?: string;
 };
 
+export type RawData = {
+    videoDetails: {
+        videoId: string;
+        title: string;
+        author: string;
+        lengthSeconds: string;
+    };
+    streamingData: {
+        adaptiveFormats: {
+            itag: number;
+            height: number;
+            contentLength: string;
+        }[];
+    };
+};
+
 export type RawFormat = {
     id: string;
     title: string;
     author: string;
     duration: string;
     formats: {
-        formatId: string;
-        height: string;
-        size: number | string;
+        formatId: number;
+        height: number;
+        size: number;
     }[];
     audioFormats: {
-        formatId: string;
+        formatId: number;
         size: number;
     }[];
 };
@@ -33,22 +49,23 @@ export type HumanizedFormat = {
     author: string;
     duration: string;
     videoFormats: {
-        formatId: string;
-        height: string;
+        formatId: number;
+        height: number;
         size: string;
     }[];
-    createdAt?: string;
 };
 
 export type StorageData = {
     response: APIData | HumanizedFormat;
     expiry?: number;
+    createdAt?: string;
 };
 
-export type ApiResponse = {
+export type BackgroundResponse = {
     success: boolean;
     data: APIData | HumanizedFormat;
     cached: boolean;
+    createdAt?: string; // Only when we use cached
     message?: string;
-    api?: boolean;
+    api?: boolean; // Only when we use the server API
 };
