@@ -17,11 +17,11 @@ export function extractVideoTag(url: string) {
 export const optionIDs = ["p144", "p240", "p360", "p480", "p720", "p1080", "p1440"];
 
 // Load options when you open the popup
-export function loadOptions() {
-    optionIDs.forEach(async (option) => {
-        const { [option]: value } = await chrome.storage.sync.get(option);
-        // @ts-expect-error
-        document.getElementById(option)!.checked = value ?? false;
+export async function loadOptions() {
+    const options = await chrome.storage.sync.get(optionIDs);
+    optionIDs.forEach((optionId) => {
+        const checkbox = document.getElementById(optionId)! as HTMLInputElement;
+        checkbox.checked = (options[optionId] as boolean) ?? true;
     });
 }
 
