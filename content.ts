@@ -17,17 +17,26 @@ function init(videoTag: string) {
             html: scriptContent,
         },
         (response) => {
+            if (chrome.runtime.lastError) {
+                console.error("[CONTENT]: Error:", chrome.runtime.lastError.message);
+                return;
+            }
             console.log(response);
         },
     );
 }
 
+let lastTag: string | undefined = undefined;
 window.addEventListener("yt-navigate-finish", () => {
     const url = window.location.href;
     const tag = extractVideoTag(url);
+
+    if (lastTag === tag) return;
+    lastTag = tag;
+
     if (tag) {
-        chrome.runtime.sendMessage({ type: "setBadge", tag });
         init(tag);
+        chrome.runtime.sendMessage({ type: "setBadge" });
     } else {
         chrome.runtime.sendMessage({ type: "clearBadge" });
     }

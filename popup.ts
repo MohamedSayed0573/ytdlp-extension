@@ -1,23 +1,23 @@
-const containerEl = document.getElementById("container")!;
-const durationDisplay = document.getElementById("duration-display")!;
-const titleDisplay = document.getElementById("title-display")!;
-const audioDisplay = document.getElementById("audio-display")!;
-const optionsBtn = document.getElementById("optionsBtn")!;
-
-import type { APIData, ApiResponse, HumanizedFormat } from "./types";
+import type { APIData, BackgroundResponse, HumanizedFormat } from "./types";
+import { extractVideoTag, getOptions, optionIDs, getElement } from "./utils";
 import ms from "ms";
-import { extractVideoTag, getOptions, optionIDs } from "./utils";
 
-function showError(msg: string) {
-    console.error("[popup] Error:", msg);
-    containerEl.textContent = `Error: ${msg}`;
-    containerEl.className = "error";
-}
+const containerEl = getElement("container", true);
+const durationDisplay = getElement("duration-display");
+const titleDisplay = getElement("title-display");
+const audioDisplay = getElement("audio-display");
+const optionsBtn = getElement("optionsBtn", true);
 
-function showInfo(msg: string) {
-    console.log("[popup] Info:", msg);
-    containerEl.textContent = msg;
-    containerEl.className = "info";
+function showStatus(message: string, type: "info" | "error") {
+    if (type === "info") {
+        console.log("[popup] Info:", message);
+        containerEl.className = "info";
+        containerEl.textContent = message;
+    } else {
+        console.error("[popup] Error:", message);
+        containerEl.className = "error";
+        containerEl.textContent = `Error: ${message}`;
+    }
 }
 
 optionsBtn.addEventListener("click", () => {
@@ -27,21 +27,21 @@ optionsBtn.addEventListener("click", () => {
 async function displayVideoInfo(data: APIData | HumanizedFormat) {
     try {
         if (!data) {
-            showError("Missing video data");
+            showStatus("Missing video data", "error");
             return;
         }
 
         // Update title, duration, and audio in header
-        if (data.title) {
+        if (titleDisplay && data.title) {
             titleDisplay.textContent = data.title;
             titleDisplay.title = data.title;
         }
-        if (data.duration) {
+        if (durationDisplay && data.duration) {
             durationDisplay.textContent = data.duration;
         }
 
         // Note: audioFormat only exists in APIData
-        if ("audioFormat" in data && data.audioFormat) {
+        if (audioDisplay && "audioFormat" in data && data.audioFormat) {
             audioDisplay.textContent = data.audioFormat;
         }
 
@@ -57,7 +57,7 @@ async function displayVideoInfo(data: APIData | HumanizedFormat) {
                 return options[optionId] ?? true;
             });
             if (enabledOptions.length === 0) {
-                showInfo("All Resolutions Disabled. Enable in options");
+                showStatus("All Resolutions Disabled. Enable in options", "info");
                 return;
             }
 
@@ -85,12 +85,12 @@ async function displayVideoInfo(data: APIData | HumanizedFormat) {
 
             containerEl.append(section);
         } else {
-            showError("No video formats found");
+            showStatus("No video formats found", "error");
         }
     } catch (e) {
         if (e instanceof Error) {
             console.error("[popup] Error displaying data:", e.message);
-            showError("Failed to display video data: " + e.message);
+            showStatus("Failed to display video data: " + e.message, "error");
         }
     }
 }
@@ -121,32 +121,37 @@ chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     const tab = tabs[0];
 
     if (!tab) {
-        showInfo("No active tab found");
+        showStatus("No active tab found", "info");
         return;
     }
 
     const url = tab.url;
     if (!url || !isYoutubeVideo(url)) {
-        showInfo("Not a YouTube video page");
+        showStatus("Not a YouTube video page", "info");
         return;
     }
 
     const tag = extractVideoTag(url);
     if (!tag) {
-        showInfo("Open a Youtube video");
+        showStatus("Open a Youtube video", "info");
         return;
     }
 
     chrome.runtime.sendMessage(
         { type: "sendYoutubeUrl", tag, tabId: tab.id },
-        (response: ApiResponse) => {
-            if (response?.success) {
+        (response: BackgroundResponse) => {
+            if (chrome.runtime.lastError) {
+                console.error("[POPUP]: Error:", chrome.runtime.lastError.message);
+                return;
+            }
+
+            if (response?.success && response.data) {
                 displayVideoInfo(response.data);
                 if (response.cached) {
-                    showCachedNote(response.data.createdAt);
+                    showCachedNote(response.createdAt);
                 }
             } else {
-                showError(response?.message || "Unknown error - check console");
+                showStatus(response?.message || "Unknown error - check console", "error");
             }
         },
     );

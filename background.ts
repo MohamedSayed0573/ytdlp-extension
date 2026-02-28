@@ -2,7 +2,7 @@ console.log("[background] Service worker starting");
 
 import ms from "ms";
 import { filesize } from "filesize";
-import type { APIData, HumanizedFormat, RawFormat } from "./types";
+import type { APIData, BackgroundResponse, HumanizedFormat, RawData, RawFormat } from "./types";
 import { getFromStorage, saveToStorage } from "./cache";
 import { addBadge, clearBadge } from "./badge";
 
@@ -15,11 +15,15 @@ chrome.runtime.onMessage.addListener(
             html?: string;
         },
         sender,
-        sendResponse,
+        sendResponse: (response: BackgroundResponse) => void,
     ) => {
         if (message.type === "clearBadge") {
             clearBadge(sender.tab?.id);
-            return true;
+            return;
+        }
+        if (message.type === "setBadge") {
+            addBadge(sender.tab?.id);
+            return;
         }
 
         if (message.type !== "sendYoutubeUrl") {
@@ -46,8 +50,9 @@ chrome.runtime.onMessage.addListener(
                 addBadge(tabId);
                 sendResponse({
                     success: true,
-                    data: cached,
+                    data: cached.response,
                     cached: true,
+                    createdAt: cached.createdAt,
                 });
                 return;
             }
@@ -69,8 +74,10 @@ chrome.runtime.onMessage.addListener(
                     data = await fetchVideoData(tag);
                 }
 
-                const formattedData = await formatVideoResponse(data);
-                saveToStorage(tag, formattedData);
+                const rawFormats = formatVideoResponse(data);
+                const formattedData = humanizeData(rawFormats);
+
+                await saveToStorage(tag, formattedData);
                 addBadge(tabId);
                 sendResponse({
                     success: true,
@@ -82,7 +89,7 @@ chrome.runtime.onMessage.addListener(
                 try {
                     console.error("[background] Scrape failed, trying API", err);
                     const apiData = await fetchAPI(tag);
-                    saveToStorage(tag, apiData);
+                    await saveToStorage(tag, apiData);
                     addBadge(tabId);
                     sendResponse({
                         success: true,
@@ -103,11 +110,19 @@ chrome.runtime.onMessage.addListener(
             }
         })();
 
-        return true; // Return true synchronously to keep the message channel open
+        return true; // Return true to keep the message channel open, because we have async operations
     },
 );
 
-const VIDEO_ITAGS = [394, 395, 396, 397, 398, 399];
+const VIDEO_ITAGS: Set<number> = new Set([
+    394, // 144p
+    395, // 240p
+    396, // 360p
+    397, // 480p
+    398, // 720p
+    399, // 1080p
+]);
+
 const AUDIO_ITAG = 251;
 
 async function fetchVideoData(videoTag: string) {
@@ -117,34 +132,27 @@ async function fetchVideoData(videoTag: string) {
     return extractYtInitial(fetchedHtml);
 }
 
-function extractYtInitial(html: string) {
+function extractYtInitial(html: string): RawData {
     const match = html.match(/ytInitialPlayerResponse\s*=\s*(\{.+?\});/s);
     if (!match || !match[1]) throw new Error("No match found");
-
-    try {
-        const data = JSON.parse(match[1]);
-        if (!data) throw new Error("No data found");
-        return data;
-    } catch (e) {
-        console.error("Failed to parse JSON", e);
-        throw e;
-    }
+    const data = JSON.parse(match[1]);
+    if (!data) throw new Error("No data found");
+    return data;
 }
 
-async function formatVideoResponse(data: any): Promise<HumanizedFormat> {
+function formatVideoResponse(data: RawData): RawFormat {
     if (!data || !data.videoDetails || !data.streamingData || !data.streamingData.adaptiveFormats)
         throw new Error("No data found");
 
-    const result: RawFormat = {
+    return {
         id: data.videoDetails.videoId,
         title: data.videoDetails.title,
-        author: data.videoDetails.author,
-        duration: data.streamingData.adaptiveFormats[0].approxDurationMs,
+        duration: data.videoDetails.lengthSeconds,
         formats: data.streamingData.adaptiveFormats
-            .filter((format: any) => {
-                return VIDEO_ITAGS.includes(format.itag);
+            .filter((format) => {
+                return VIDEO_ITAGS.has(format.itag);
             })
-            .map((format: any) => {
+            .map((format) => {
                 return {
                     formatId: format.itag,
                     height: format.height,
@@ -152,29 +160,29 @@ async function formatVideoResponse(data: any): Promise<HumanizedFormat> {
                 };
             }),
         audioFormats: data.streamingData.adaptiveFormats
-            .filter((format: any) => {
+            .filter((format) => {
                 return format.itag === AUDIO_ITAG;
             })
-            .map((format: any) => {
+            .map((format) => {
                 return {
                     formatId: format.itag,
                     size: parseInt(format.contentLength || "0"),
                 };
             }),
     };
+}
 
-    const audioSize = getAverageAudioSize(result.audioFormats);
-    const mergedFormats = mergeAudioWithVideo(result.formats, audioSize);
+function humanizeData(formats: RawFormat): HumanizedFormat {
+    const audioSize = getAverageAudioSize(formats.audioFormats);
+    const mergedFormats = mergeAudioWithVideo(formats.formats, audioSize);
     const humanizedFormats = humanizeVideoFormats(mergedFormats);
 
-    const final: HumanizedFormat = {
-        id: result.id,
-        title: result.title,
-        author: result.author,
-        duration: ms(parseInt(result.duration || "0")),
+    return {
+        id: formats.id,
+        title: formats.title,
+        duration: ms(parseInt(formats.duration || "0") * 1000),
         videoFormats: humanizedFormats,
     };
-    return final;
 }
 
 function humanizeVideoFormats(formats: RawFormat["formats"]) {
@@ -200,15 +208,13 @@ function mergeAudioWithVideo(videoFormats: RawFormat["formats"], audioSize: numb
     return videoFormats.map((videoFormat) => {
         return {
             ...videoFormat,
-            size: (videoFormat.size as number) + audioSize,
+            size: videoFormat.size + audioSize,
         };
     });
 }
 
 async function fetchAPI(tag: string) {
-    const humanReadableSizes = true;
-    const mergeAudioWithVideo = true;
-    const apiUrl = `${__API_URL__}/api/video-sizes/${tag}/?humanReadableSizes=${humanReadableSizes}&mergeAudioWithVideo=${mergeAudioWithVideo}`;
+    const apiUrl = `${__API_URL__}/api/video-sizes/${tag}?humanReadableSizes=true&mergeAudioWithVideo=true`;
     console.log("[background] Fetching URL:", apiUrl);
 
     const res = await fetch(apiUrl, {
