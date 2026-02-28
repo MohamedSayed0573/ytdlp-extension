@@ -19,7 +19,11 @@ chrome.runtime.onMessage.addListener(
     ) => {
         if (message.type === "clearBadge") {
             clearBadge(sender.tab?.id);
-            return true;
+            return;
+        }
+        if (message.type === "setBadge") {
+            addBadge(sender.tab?.id);
+            return;
         }
 
         if (message.type !== "sendYoutubeUrl") {
@@ -106,7 +110,7 @@ chrome.runtime.onMessage.addListener(
             }
         })();
 
-        return true; // Return true synchronously to keep the message channel open
+        return true; // Return true to keep the message channel open, because we have async operations
     },
 );
 

@@ -17,6 +17,10 @@ function init(videoTag: string) {
             html: scriptContent,
         },
         (response) => {
+            if (chrome.runtime.lastError) {
+                console.log("[CONTENT]: Error:", chrome.runtime.lastError.message);
+                return;
+            }
             console.log(response);
         },
     );
