@@ -23,6 +23,7 @@
         "@types/ms": "^2.1.0",
         "esbuild": "^0.27.3",
         "husky": "^9.1.7",
+        "prettier": "^3.8.1",
         "typescript": "^5.9.3"
     }
 }
