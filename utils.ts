@@ -1,4 +1,4 @@
-export function extractVideoTag(url: string) {
+export function extractVideoTag(url: string): string | undefined {
     try {
         const parsedUrl = new URL(url);
         const videoTag = parsedUrl.searchParams.get("v");

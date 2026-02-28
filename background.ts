@@ -110,7 +110,15 @@ chrome.runtime.onMessage.addListener(
     },
 );
 
-const VIDEO_ITAGS = [394, 395, 396, 397, 398, 399];
+const VIDEO_ITAGS: Map<number, string> = new Map([
+    [394, "144p"],
+    [395, "240p"],
+    [396, "360p"],
+    [397, "480p"],
+    [398, "720p"],
+    [399, "1080p"],
+]);
+
 const AUDIO_ITAG = 251;
 
 async function fetchVideoData(videoTag: string) {
@@ -139,7 +147,7 @@ function formatVideoResponse(data: RawData): RawFormat {
         duration: data.videoDetails.lengthSeconds,
         formats: data.streamingData.adaptiveFormats
             .filter((format) => {
-                return VIDEO_ITAGS.includes(format.itag);
+                return VIDEO_ITAGS.has(format.itag);
             })
             .map((format) => {
                 return {
