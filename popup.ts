@@ -140,6 +140,11 @@ chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     chrome.runtime.sendMessage(
         { type: "sendYoutubeUrl", tag, tabId: tab.id },
         (response: BackgroundResponse) => {
+            if (chrome.runtime.lastError) {
+                console.error("[POPUP]: Error:", chrome.runtime.lastError.message);
+                return;
+            }
+
             if (response?.success && response.data) {
                 displayVideoInfo(response.data);
                 if (response.cached) {

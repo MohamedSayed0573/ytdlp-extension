@@ -21,6 +21,7 @@ export async function loadOptions() {
     const options = await chrome.storage.sync.get(optionIDs);
     optionIDs.forEach((optionId) => {
         const checkbox = getElement(optionId, false) as HTMLInputElement;
+        if (!checkbox) return;
         checkbox.checked = (options[optionId] as boolean) ?? true;
     });
 }
