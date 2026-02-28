@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
-import type { Data, HumanizedData } from "../utils/formatResponse";
+import type { Data, HumanizedData } from "../types";
 import express from "express";
-import { InvalidInputError } from "../utils/errors";
 
 import { formatResponse, humanizeSizes, mergeAudioWithVideoFormats } from "../utils/formatResponse";
+import { InvalidInputError } from "../utils/errors";
 import { getVideoInfo, validateVideoTag } from "../utils/ytdlp";
 import ms from "ms";
 import { checkCache, setCache } from "../utils/cache";

@@ -1,6 +1,7 @@
 import CONFIG from "../config/constants";
 import ms from "ms";
 import { filesize } from "filesize";
+import type { Data, HumanizedData, RawDataFormat } from "../types";
 
 function extractVideoSizes(data: RawDataFormat, videoFormatIDs: readonly string[]) {
     const formats = data.formats || [];
@@ -30,45 +31,6 @@ function extractAudioSize(data: RawDataFormat, audioFormatID: string) {
 function extractDuration(data: RawDataFormat) {
     return data.duration ?? data.formats?.[0]?.fragments?.[0]?.rawDuration ?? null;
 }
-
-type RawDataFormat = {
-    id: string;
-    title: string;
-    duration?: number;
-    formats: Array<{
-        format_id: string;
-        filesize: number;
-        filesize_approx: number;
-        height: number;
-        fragments?: Array<{
-            rawDuration: number;
-        }>;
-    }>;
-};
-
-export type Data = {
-    id: string;
-    title: string;
-    duration: number | null;
-    audioFormat: number | null;
-    videoFormats: {
-        formatId: string;
-        height: number;
-        size: number;
-    }[];
-};
-
-export type HumanizedData = {
-    id: string;
-    title: string;
-    duration: string;
-    audioFormat: string;
-    videoFormats: {
-        formatId: string;
-        height: number;
-        size: string;
-    }[];
-};
 
 export function formatResponse(data: RawDataFormat): Data {
     const primaryFormats = extractVideoSizes(data, CONFIG.VIDEO_FORMAT_IDS);
