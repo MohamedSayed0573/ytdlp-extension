@@ -63,7 +63,7 @@ export type StorageData = {
 
 export type BackgroundResponse = {
     success: boolean;
-    data: APIData | HumanizedFormat;
+    data: APIData | HumanizedFormat | null;
     cached: boolean;
     createdAt?: string; // Only when we use cached
     message?: string;

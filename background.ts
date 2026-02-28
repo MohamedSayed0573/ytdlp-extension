@@ -2,7 +2,7 @@ console.log("[background] Service worker starting");
 
 import ms from "ms";
 import { filesize } from "filesize";
-import type { APIData, HumanizedFormat, RawData, RawFormat } from "./types";
+import type { APIData, BackgroundResponse, HumanizedFormat, RawData, RawFormat } from "./types";
 import { getFromStorage, saveToStorage } from "./cache";
 import { addBadge, clearBadge } from "./badge";
 
@@ -15,7 +15,7 @@ chrome.runtime.onMessage.addListener(
             html?: string;
         },
         sender,
-        sendResponse,
+        sendResponse: (response: BackgroundResponse) => void,
     ) => {
         if (message.type === "clearBadge") {
             clearBadge(sender.tab?.id);
@@ -46,7 +46,7 @@ chrome.runtime.onMessage.addListener(
                 addBadge(tabId);
                 sendResponse({
                     success: true,
-                    data: cached,
+                    data: cached.response,
                     cached: true,
                     createdAt: cached.createdAt,
                 });

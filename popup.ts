@@ -1,8 +1,24 @@
-const containerEl = document.getElementById("container")!;
-const durationDisplay = document.getElementById("duration-display")!;
-const titleDisplay = document.getElementById("title-display")!;
-const audioDisplay = document.getElementById("audio-display")!;
-const optionsBtn = document.getElementById("optionsBtn")!;
+function getElement(id: string, isFatal: true): HTMLElement;
+function getElement(id: string, isFatal?: false): HTMLElement | null;
+
+function getElement(id: string, isFatal: boolean = false): HTMLElement | null {
+    const element = document.getElementById(id);
+    if (!element) {
+        const message = `[HTML] [${isFatal ? "Fatal" : "Not-Fatal"}] Element #${id} not found`;
+        console.error(message);
+
+        if (isFatal) {
+            throw new Error(message);
+        }
+    }
+    return element;
+}
+
+const containerEl = getElement("container", true);
+const durationDisplay = getElement("duration-display");
+const titleDisplay = getElement("title-display");
+const audioDisplay = getElement("audio-display");
+const optionsBtn = getElement("optionsBtn", true);
 
 import type { APIData, BackgroundResponse, HumanizedFormat } from "./types";
 import ms from "ms";
@@ -32,16 +48,16 @@ async function displayVideoInfo(data: APIData | HumanizedFormat) {
         }
 
         // Update title, duration, and audio in header
-        if (data.title) {
+        if (titleDisplay && data.title) {
             titleDisplay.textContent = data.title;
             titleDisplay.title = data.title;
         }
-        if (data.duration) {
+        if (durationDisplay && data.duration) {
             durationDisplay.textContent = data.duration;
         }
 
         // Note: audioFormat only exists in APIData
-        if ("audioFormat" in data && data.audioFormat) {
+        if (audioDisplay && "audioFormat" in data && data.audioFormat) {
             audioDisplay.textContent = data.audioFormat;
         }
 
@@ -140,7 +156,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     chrome.runtime.sendMessage(
         { type: "sendYoutubeUrl", tag, tabId: tab.id },
         (response: BackgroundResponse) => {
-            if (response?.success) {
+            if (response?.success && response.data) {
                 displayVideoInfo(response.data);
                 if (response.cached) {
                     showCachedNote(response.createdAt);

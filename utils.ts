@@ -20,7 +20,7 @@ export const optionIDs = ["p144", "p240", "p360", "p480", "p720", "p1080", "p144
 export async function loadOptions() {
     const options = await chrome.storage.sync.get(optionIDs);
     optionIDs.forEach((optionId) => {
-        const checkbox = document.getElementById(optionId)! as HTMLInputElement;
+        const checkbox = document.getElementById(optionId) as HTMLInputElement;
         checkbox.checked = (options[optionId] as boolean) ?? true;
     });
 }
