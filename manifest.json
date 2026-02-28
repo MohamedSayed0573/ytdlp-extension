@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Video sizes viewer for YouTube (Dev)",
+    "name": "TubeSize",
     "version": "1.0",
-    "description": "View real-time file size data for YouTube videos across different quality levels. Lightweight, fast, and privacy-focused.",
+    "description": "View file size data for YouTube videos across different quality levels.",
 
     "permissions": ["activeTab", "storage"],
 

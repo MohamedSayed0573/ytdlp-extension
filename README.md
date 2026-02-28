@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="icons/icon-128.png" alt="YouTube Size Viewer Logo" width="96" />
+<img src="icons/icon-128.png" alt="TubeSize Logo" width="96" />
 
-# YouTube Video Size Viewer
+# TubeSize - YouTube Video Size Viewer
 
 **Know exactly how much data a YouTube video will cost you — before you press play.**
 
@@ -23,7 +23,7 @@ In many parts of the world, internet data is a limited and expensive resource. I
 
 The problem? YouTube doesn't tell you how large a video file actually is before you watch it. You might unknowingly stream a 1080p video that costs you 4 GB of your monthly quota, when a 480p version at 800 MB would have looked just fine.
 
-**YouTube Video Size Viewer** solves this by showing you the exact file size for every available resolution — right in your browser toolbar — so you can make an informed choice before hitting play.
+**TubeSize** solves this by showing you the exact file size for every available resolution — right in your browser toolbar — so you can make an informed choice before hitting play.
 
 ---
 
@@ -60,8 +60,8 @@ The problem? YouTube doesn't tell you how large a video file actually is before 
 1. **Clone the repository**
 
     ```bash
-    git clone https://github.com/your-username/youtube-size-viewer.git
-    cd youtube-size-viewer
+    git clone https://github.com/MohamedSayed0573/tubesize.git
+    cd tubesize
     ```
 
 2. **Install dependencies**
