@@ -7,8 +7,7 @@
         "build": "npx tsc",
         "start": "npm run build && node --inspect=0.0.0.0:9229 dist/server.js",
         "dev": "nodemon --watch '**/*.ts' --exec 'npx tsc && node --inspect=0.0.0.0:9229 dist/server.js' | pino-pretty",
-        "prettier:write": "npx prettier . --write",
-        "prepare": "husky"
+        "prettier:write": "npx prettier . --write"
     },
     "keywords": [],
     "author": "",
