@@ -1,4 +1,4 @@
-import { APIData, HumanizedFormat, StorageData } from "./types";
+import type { APIData, HumanizedFormat, StorageData } from "./types";
 
 export async function saveToStorage(tag: string, response: APIData | HumanizedFormat | null) {
     if (!response) return;

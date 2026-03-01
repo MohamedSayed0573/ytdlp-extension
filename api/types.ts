@@ -1,16 +1,12 @@
-export type RawDataFormat = {
+export type RawData = {
     id: string;
     title: string;
-    duration?: number;
-    formats: Array<{
+    duration: number;
+    formats: {
         format_id: string;
-        filesize: number;
-        filesize_approx: number;
         height: number;
-        fragments?: Array<{
-            rawDuration: number;
-        }>;
-    }>;
+        filesize: number;
+    }[];
 };
 
 export type Data = {
@@ -19,7 +15,7 @@ export type Data = {
     duration: number | null;
     audioFormat: number | null;
     videoFormats: {
-        formatId: string;
+        formatId: number;
         height: number;
         size: number;
     }[];
@@ -31,7 +27,7 @@ export type HumanizedData = {
     duration: string;
     audioFormat: string;
     videoFormats: {
-        formatId: string;
+        formatId: number;
         height: number;
         size: string;
     }[];

@@ -4,6 +4,7 @@ const execFileAsync = promisify(execFile);
 import CONFIG from "../config/constants";
 import { InvalidInputError } from "../utils/errors";
 import env from "../utils/env";
+import { RawData } from "../types";
 
 const BASE_ARGS = ["--ignore-config", "-J", "--skip-download"];
 if (env.NODE_ENV === "production" || env.NODE_ENV === "staging") {
@@ -13,7 +14,7 @@ if (env.NODE_ENV === "production" || env.NODE_ENV === "staging") {
 }
 Object.freeze(BASE_ARGS);
 
-export async function getVideoInfo(videoTag: string) {
+export async function getVideoInfo(videoTag: string): Promise<RawData> {
     try {
         const args = [...BASE_ARGS, "--", videoTag];
 
