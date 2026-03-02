@@ -110,6 +110,65 @@
                 color: #fff;
                 flex: 1;
             }
+            .section-divider {
+                height: 1px;
+                background: #333;
+            }
+            .section-title {
+                font-size: 11px;
+                font-weight: 600;
+                color: #aaa;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 8px;
+            }
+            .cache-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(255, 255, 255, 0.04);
+                padding: 8px 10px;
+                border-radius: 6px;
+                border: 1px solid transparent;
+                margin-bottom: 8px;
+            }
+            .cache-row-label {
+                font-size: 13px;
+                font-weight: 500;
+                color: #fff;
+            }
+            .ttl-select {
+                background: #2a2a2a;
+                color: #fff;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                border-radius: 4px;
+                padding: 3px 6px;
+                font-size: 12px;
+                cursor: pointer;
+                font-family: inherit;
+                outline: none;
+            }
+            .ttl-select:focus {
+                border-color: #4dabf7;
+            }
+            .reset-cache-btn {
+                width: 100%;
+                background: rgba(255, 59, 59, 0.08);
+                color: #ff6b6b;
+                border: 1px solid rgba(255, 59, 59, 0.2);
+                border-radius: 6px;
+                padding: 8px 10px;
+                font-size: 13px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+                font-family: inherit;
+                text-align: center;
+            }
+            .reset-cache-btn:hover {
+                background: rgba(255, 59, 59, 0.18);
+                border-color: rgba(255, 59, 59, 0.4);
+            }
         </style>
     </head>
     <body>
@@ -145,6 +204,19 @@
                     <span class="option-label">1080p</span>
                 </label>
             </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="container">
+            <div class="section-title">Cache</div>
+            <div class="cache-row">
+                <span class="cache-row-label">Duration</span>
+                <select id="cacheTTL" class="ttl-select">
+                    <option value="1">1 Day</option>
+                    <option value="3">3 Days</option>
+                    <option value="7">7 Days</option>
+                </select>
+            </div>
+            <button id="resetCache" class="reset-cache-btn">Clear Cache</button>
         </div>
         <script src="dist/options.js"></script>
     </body>
