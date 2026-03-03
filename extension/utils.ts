@@ -16,16 +16,6 @@ export function extractVideoTag(url: string): string | undefined {
 
 export const optionIDs = ["p144", "p240", "p360", "p480", "p720", "p1080"];
 
-// Load the options page
-export async function loadOptions() {
-    const options = await chrome.storage.sync.get(optionIDs);
-    optionIDs.forEach((optionId) => {
-        const checkbox = getElement(optionId, false) as HTMLInputElement;
-        if (!checkbox) return;
-        checkbox.checked = (options[optionId] as boolean) ?? true;
-    });
-}
-
 // Return the user options
 export async function getOptions() {
     return await chrome.storage.sync.get(optionIDs);

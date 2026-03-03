@@ -1,1 +1,1 @@
-npm run prettier:write
+pnpm -r prettier:write

@@ -1,9 +1,15 @@
-import { APIData, HumanizedFormat, StorageData } from "./types";
+import type { APIData, HumanizedFormat, StorageData } from "./types";
+
+async function getTTL(): Promise<number> {
+    const { cacheTTL } = (await chrome.storage.sync.get("cacheTTL")) as { cacheTTL: string };
+
+    return parseInt(cacheTTL) || 3 * 24 * 60 * 60;
+}
 
 export async function saveToStorage(tag: string, response: APIData | HumanizedFormat | null) {
     if (!response) return;
 
-    const ttlInSeconds = 60 * 60 * 24 * 7;
+    const ttlInSeconds = await getTTL();
     const expiry = Date.now() + ttlInSeconds * 1000;
 
     const dataToStore = {
@@ -30,4 +36,15 @@ export async function getFromStorage(tag: string): Promise<StorageData | null> {
     }
 
     return item;
+}
+
+export async function clearStorage(): Promise<boolean> {
+    try {
+        await chrome.storage.local.clear();
+        console.log("Cleared Cache");
+        return true;
+    } catch (err) {
+        console.error("Failed to clear storage", err);
+        return false;
+    }
 }

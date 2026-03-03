@@ -4,18 +4,25 @@ const execFileAsync = promisify(execFile);
 import CONFIG from "../config/constants";
 import { InvalidInputError } from "../utils/errors";
 import env from "../utils/env";
+import type { RawData } from "../types";
 
 const BASE_ARGS = ["--ignore-config", "-J", "--skip-download"];
-if (env.NODE_ENV === "production" || env.NODE_ENV === "staging") {
-    BASE_ARGS.push("--cookies", "/api/www.youtube.com_cookies.txt");
-    BASE_ARGS.push("--remote-components", "ejs:github");
-    BASE_ARGS.push("--js-runtimes", "node");
-}
-Object.freeze(BASE_ARGS);
+const PROD_ARGS = [
+    "--cookies",
+    "/api/www.youtube.com_cookies.txt",
+    "--remote-components",
+    "ejs:github",
+    "--js-runtimes",
+    "node",
+];
+const isProd = env.NODE_ENV === "production";
+const isStaging = env.NODE_ENV === "staging";
 
-export async function getVideoInfo(videoTag: string) {
+const YT_DLP_ARGS = isProd || isStaging ? [...BASE_ARGS, ...PROD_ARGS] : [...BASE_ARGS];
+
+export async function getVideoInfo(videoTag: string): Promise<RawData> {
     try {
-        const args = [...BASE_ARGS, "--", videoTag];
+        const args = [...YT_DLP_ARGS, "--", videoTag];
 
         const { stdout } = await execFileAsync("yt-dlp", args, {
             timeout: CONFIG.YTDLP_TIMEOUT_MS,

@@ -1,38 +1,34 @@
 import CONFIG from "../config/constants";
 import ms from "ms";
 import { filesize } from "filesize";
-import type { Data, HumanizedData, RawDataFormat } from "../types";
+import type { Data, HumanizedData, RawData } from "../types";
 
-function extractVideoSizes(data: RawDataFormat, videoFormatIDs: readonly string[]) {
+function extractVideoSizes(data: RawData, videoFormatIDs: readonly string[]) {
     const formats = data.formats || [];
     return formats
-        .filter((format: any) => {
-            return (
-                videoFormatIDs.includes(format.format_id) &&
-                format.height &&
-                (format.filesize || format.filesize_approx)
-            );
+        .filter((format) => {
+            return videoFormatIDs.includes(format.format_id) && format.height && format.filesize;
         })
-        .map((format: any) => {
+        .map((format) => {
             return {
-                formatId: format.format_id,
+                formatId: parseInt(format.format_id) || 0,
                 height: format.height,
-                size: format.filesize ?? format.filesize_approx,
+                size: format.filesize,
             };
         });
 }
 
-function extractAudioSize(data: RawDataFormat, audioFormatID: string) {
+function extractAudioSize(data: RawData, audioFormatID: string) {
     const formats = data.formats || [];
-    const rawAudioFormat = formats.find((format: any) => format.format_id === audioFormatID);
-    return rawAudioFormat ? rawAudioFormat.filesize || rawAudioFormat.filesize_approx : null;
+    const rawAudioFormat = formats.find((format) => format.format_id === audioFormatID);
+    return rawAudioFormat ? rawAudioFormat.filesize : null;
 }
 
-function extractDuration(data: RawDataFormat) {
-    return data.duration ?? data.formats?.[0]?.fragments?.[0]?.rawDuration ?? null;
+function extractDuration(data: RawData) {
+    return data.duration ?? null;
 }
 
-export function formatResponse(data: RawDataFormat): Data {
+export function formatResponse(data: RawData): Data {
     const primaryFormats = extractVideoSizes(data, CONFIG.VIDEO_FORMAT_IDS);
     const primaryAudio = extractAudioSize(data, CONFIG.AUDIO_FORMAT_ID);
     return {
