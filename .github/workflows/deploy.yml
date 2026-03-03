@@ -5,6 +5,8 @@ on:
             - main
         tags:
             - "v*"
+        paths:
+            - "api/**"
     workflow_dispatch:
 jobs:
     build:
@@ -32,7 +34,7 @@ jobs:
             - name: Build and push Docker image
               uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
               with:
-                  context: .
+                  context: ./api
                   target: ${{ startsWith(github.ref, 'refs/tags/') && 'prod' || 'staging'}}
                   tags: |
                       ${{ secrets.DOCKERHUB_USERNAME }}/yt-dlp-api:${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'latest' }}
@@ -53,7 +55,7 @@ jobs:
                   host: ${{ secrets.EC2_HOST }}
                   username: ubuntu
                   key: ${{ secrets.EC2_SSH_KEY }} # Make sure the secret name matches what you have in GitHub
-                  source: "docker-compose.staging.yml"
+                  source: "api/docker-compose.staging.yml"
                   target: "~/" # Copies to /home/ubuntu/
 
             - name: Pull the image & Start the container
@@ -78,11 +80,11 @@ jobs:
 
                       # Pull the image
                       # -f flag is used to specify the docker-compose file. Default is docker-compose.yml
-                      docker compose -p staging -f docker-compose.staging.yml pull
+                      docker compose -p staging -f api/docker-compose.staging.yml pull
 
                       # Start the container. If the container hasn't changed, it will not be restarted
                       # -d flag is used to run the container in detached mode
-                      docker compose -p staging -f docker-compose.staging.yml up -d
+                      docker compose -p staging -f api/docker-compose.staging.yml up -d
 
                       # Clean up old images
                       # -f flag is used to force the prune
@@ -101,7 +103,7 @@ jobs:
                   host: ${{ secrets.EC2_HOST }}
                   username: ubuntu
                   key: ${{ secrets.EC2_SSH_KEY }} # Make sure the secret name matches what you have in GitHub
-                  source: "docker-compose.prod.yml,docker-compose.staging.yml"
+                  source: "api/docker-compose.prod.yml,api/docker-compose.staging.yml"
                   target: "~/" # Copies to /home/ubuntu/
 
             - name: Pull the image & Start the container
@@ -126,14 +128,14 @@ jobs:
 
                       # Pull the image
                       # -f flag is used to specify the docker-compose file. Default is docker-compose.yml
-                      docker compose -p prod -f docker-compose.prod.yml pull
-                      docker compose -p staging -f docker-compose.staging.yml pull
+                      docker compose -p prod -f api/docker-compose.prod.yml pull
+                      docker compose -p staging -f api/docker-compose.staging.yml pull
 
                       # Start the container. If the container hasn't changed, it will not be restarted
                       # -d flag is used to run the container in detached mode
-                      docker compose -p prod -f docker-compose.prod.yml up -d
+                      docker compose -p prod -f api/docker-compose.prod.yml up -d
 
-                      docker compose -p staging -f docker-compose.staging.yml up -d
+                      docker compose -p staging -f api/docker-compose.staging.yml up -d
 
                       # Clean up old images
                       # -f flag is used to force the prune
