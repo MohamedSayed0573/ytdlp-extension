@@ -1,0 +1,41 @@
+name: Release
+on:
+    push:
+        tags:
+            - "v*.*.*"
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  sparse-checkout: |
+                      extension
+                      pnpm-workspace.yaml
+                      package.json
+                      pnpm-lock.yaml
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "18"
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm install --filter tubesize
+
+            - name: Build extension
+              run: pnpm --filter tubesize run pack
+
+            - name: Create Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  files: extension/extension.zip
