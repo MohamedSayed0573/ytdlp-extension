@@ -59,14 +59,43 @@ export function extractYtInitial(html: string): RawData {
     return data;
 }
 
-const VIDEO_ITAGS: Set<number> = new Set([
-    394, // 144p
-    395, // 240p
-    396, // 360p
-    397, // 480p
-    398, // 720p
-    399, // 1080p
+// Order of each key is important. It's the same order the user sees.
+// Order of itags is important. The first index of each key means higher priority.
+// For example, for 144p, if itag 394 is available, we choose that. If not, we check for itag 330 and so on.
+const VIDEO_ITAGS: Map<number, number[]> = new Map([
+    [144, [394, 330, 278, 160]],
+    [240, [395, 331, 242, 133]],
+    [360, [396, 332, 243, 134]],
+    [480, [397, 333, 244, 135]],
+    [720, [398, 334, 302, 247, 298, 136]],
+    [1080, [399, 335, 303, 248, 299, 137]],
+    [1440, [400, 336, 308, 271, 304, 264]],
+    [2160, [401, 337, 315, 313, 305, 266]],
+    [4320, [402, 571, 272, 138]],
 ]);
+export const resolutions = Array.from(VIDEO_ITAGS.entries());
+
+function chooseVideoFormats(data: RawData) {
+    const chosenFormats: RawFormat["formats"] = [];
+
+    for (const [resolution, itags] of resolutions) {
+        for (const itag of itags) {
+            const format = data.streamingData.adaptiveFormats.find((f) => f.itag === itag);
+            if (format) {
+                const size = parseInt(format.contentLength || "0");
+                if (size > 0) {
+                    chosenFormats.push({
+                        formatId: format.itag,
+                        height: resolution,
+                        size: size,
+                    });
+                    break;
+                }
+            }
+        }
+    }
+    return chosenFormats;
+}
 
 const AUDIO_ITAG = 251;
 
@@ -78,17 +107,7 @@ export function formatVideoResponse(data: RawData): RawFormat {
         id: data.videoDetails.videoId,
         title: data.videoDetails.title,
         duration: data.videoDetails.lengthSeconds,
-        formats: data.streamingData.adaptiveFormats
-            .filter((format) => {
-                return VIDEO_ITAGS.has(format.itag);
-            })
-            .map((format) => {
-                return {
-                    formatId: format.itag,
-                    height: format.height,
-                    size: parseInt(format.contentLength || "0"),
-                };
-            }),
+        formats: chooseVideoFormats(data),
         audioFormats: data.streamingData.adaptiveFormats
             .filter((format) => {
                 return format.itag === AUDIO_ITAG;

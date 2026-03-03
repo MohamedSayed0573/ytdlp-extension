@@ -14,7 +14,17 @@ export function extractVideoTag(url: string): string | undefined {
     }
 }
 
-export const optionIDs = ["p144", "p240", "p360", "p480", "p720", "p1080"];
+export const optionIDs = [
+    "p144",
+    "p240",
+    "p360",
+    "p480",
+    "p720",
+    "p1080",
+    "p1440",
+    "p2160",
+    "p4320",
+];
 
 // Return the user options
 export async function getOptions() {

@@ -50,7 +50,6 @@ chrome.runtime.onMessage.addListener(
             if (cached) {
                 console.log("[background] Using cached data:", cached);
 
-                // Set the badge to green checkmark
                 addBadge(tabId);
                 sendResponse({
                     success: true,
