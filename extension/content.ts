@@ -1,4 +1,4 @@
-import { extractVideoTag } from "./utils";
+import { extractVideoId } from "./utils";
 
 function init(videoTag: string) {
     const scriptsArray = Array.from(document.scripts);
@@ -27,7 +27,7 @@ let lastTag: string | undefined = undefined;
 window.addEventListener("yt-navigate-finish", async () => {
     await chrome.runtime.sendMessage({ type: "clearBadge" });
     const url = window.location.href;
-    const tag = extractVideoTag(url);
+    const tag = extractVideoId(url);
 
     if (lastTag === tag) return;
     lastTag = tag;

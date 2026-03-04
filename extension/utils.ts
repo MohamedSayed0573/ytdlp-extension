@@ -1,6 +1,18 @@
-export function extractVideoTag(url: string): string | undefined {
+export function isYoutubePage(url: string): boolean {
     try {
         const parsedUrl = new URL(url);
+        return parsedUrl.hostname === "www.youtube.com" || parsedUrl.hostname === "youtube.com";
+    } catch (err) {
+        return false;
+    }
+}
+
+export function extractVideoId(ytUrl: string): string | undefined {
+    try {
+        const parsedUrl = new URL(ytUrl);
+
+        if (parsedUrl.pathname !== "/watch") return;
+
         const videoTag = parsedUrl.searchParams.get("v");
         if (!videoTag) return;
 

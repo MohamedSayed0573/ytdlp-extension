@@ -8,6 +8,7 @@ Notes.md
 .env.staging
 extension.zip
 session*
+coverage/
 
 new_instance.sh
 www.youtube.com_cookies.txt

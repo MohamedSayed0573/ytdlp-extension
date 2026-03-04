@@ -1,5 +1,5 @@
 import type { APIData, BackgroundResponse, HumanizedFormat } from "./types";
-import { extractVideoTag, getOptions, optionIDs, getElement } from "./utils";
+import { extractVideoId, getOptions, optionIDs, getElement, isYoutubePage } from "./utils";
 import ms from "ms";
 
 const containerEl = getElement("container", true);
@@ -94,11 +94,6 @@ async function displayVideoInfo(data: APIData | HumanizedFormat) {
     }
 }
 
-function isYoutubeVideo(url: string) {
-    if (!url) return false;
-    return new URL(url).hostname.includes("youtube.com");
-}
-
 function showCachedNote(createdAt: string | undefined) {
     if (!createdAt) return;
 
@@ -118,18 +113,18 @@ function showCachedNote(createdAt: string | undefined) {
 chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     const tab = tabs[0];
 
-    if (!tab) {
+    if (!tab?.url) {
         showStatus("No active tab found", "info");
         return;
     }
 
-    const url = tab.url;
-    if (!url || !isYoutubeVideo(url)) {
+    const tabUrl = tab.url;
+    if (!isYoutubePage(tabUrl)) {
         showStatus("Not a YouTube video page", "info");
         return;
     }
 
-    const tag = extractVideoTag(url);
+    const tag = extractVideoId(tabUrl);
     if (!tag) {
         showStatus("Open a Youtube video", "info");
         return;

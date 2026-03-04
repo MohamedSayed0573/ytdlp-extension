@@ -2,7 +2,8 @@
   "name": "tubesize-workspace",
   "private": true,
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "pnpm -F tubesize test"
   },
   "devDependencies": {
     "husky": "^9.1.7",
