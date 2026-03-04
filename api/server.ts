@@ -5,6 +5,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import ms from "ms";
+import compression from "compression";
 
 import { AppError, RateLimit } from "./utils/errors";
 import apiRoutes from "./routes/api";
@@ -22,6 +23,13 @@ app.use(
 );
 
 app.set("trust proxy", 1); // Trust the first proxy hop (e.g. Docker/Nginx/AWS) to prevent rate-limit spoofing
+
+app.use(compression({ filter: shouldCompress }));
+
+function shouldCompress(req: Request, res: Response) {
+    // don't compress responses with this request header
+    return req.headers["x-no-compression"] ? false : true;
+}
 
 // Apply helmet middleware to all requests.
 app.use(helmet({ crossOriginResourcePolicy: false }));
