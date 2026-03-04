@@ -15,6 +15,7 @@
     "license": "MIT",
     "type": "module",
     "dependencies": {
+        "@types/node": "^25.3.3",
         "filesize": "^11.0.13",
         "ms": "^2.1.3"
     },

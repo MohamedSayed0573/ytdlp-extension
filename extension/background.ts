@@ -5,7 +5,7 @@ import {
     extractYtInitial,
     fetchAPI,
     fetchHTMLPage,
-    formatVideoResponse,
+    parseDataFromYtInitial,
     humanizeData,
 } from "./youtube";
 
@@ -54,31 +54,31 @@ chrome.runtime.onMessage.addListener(
 
             try {
                 let data;
-                if (message.html) {
-                    try {
+                try {
+                    if (message.html) {
                         data = extractYtInitial(message.html);
-                    } catch (err) {
-                        data = await fetchHTMLPage(tag);
+                    } else {
+                        throw new Error("no html");
                     }
-                } else {
-                    data = await fetchHTMLPage(tag);
+                } catch (err) {
+                    const fetchedHtml = await fetchHTMLPage(tag);
+                    data = extractYtInitial(fetchedHtml);
                 }
 
-                const rawFormats = formatVideoResponse(data);
-                const formattedData = humanizeData(rawFormats);
+                const rawFormats = parseDataFromYtInitial(data);
+                const humanizedFormats = humanizeData(rawFormats);
 
-                await saveToStorage(tag, formattedData);
+                await saveToStorage(tag, humanizedFormats);
                 addBadge(tabId);
                 sendResponse({
                     success: true,
-                    data: formattedData,
+                    data: humanizedFormats,
                     cached: false,
                     api: false,
                 });
             } catch (err) {
                 try {
                     const apiData = await fetchAPI(tag);
-                    await saveToStorage(tag, apiData);
                     addBadge(tabId);
                     sendResponse({
                         success: true,

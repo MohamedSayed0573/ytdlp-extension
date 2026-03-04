@@ -48,7 +48,7 @@ export async function fetchHTMLPage(videoTag: string) {
     const res = await fetch(`https://www.youtube.com/watch?v=${videoTag}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const fetchedHtml = await res.text();
-    return extractYtInitial(fetchedHtml);
+    return fetchedHtml;
 }
 
 export function extractYtInitial(html: string): RawData {
@@ -99,7 +99,7 @@ function chooseVideoFormats(data: RawData) {
 
 const AUDIO_ITAG = 251;
 
-export function formatVideoResponse(data: RawData): RawFormat {
+export function parseDataFromYtInitial(data: RawData): RawFormat {
     if (!data || !data.videoDetails || !data.streamingData || !data.streamingData.adaptiveFormats)
         throw new Error("No data found");
 

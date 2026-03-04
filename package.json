@@ -1,12 +1,13 @@
 {
-  "name": "tubesize-workspace",
-  "private": true,
-  "scripts": {
-    "prepare": "husky",
-    "test": "pnpm -F tubesize test"
-  },
-  "devDependencies": {
-    "husky": "^9.1.7",
-    "prettier": "^3.8.1"
-  }
+    "name": "tubesize-workspace",
+    "private": true,
+    "scripts": {
+        "prepare": "husky",
+        "prettier:write": "prettier . --write",
+        "test": "pnpm -F tubesize test"
+    },
+    "devDependencies": {
+        "husky": "^9.1.7",
+        "prettier": "^3.8.1"
+    }
 }
