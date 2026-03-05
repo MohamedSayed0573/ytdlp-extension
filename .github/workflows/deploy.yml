@@ -131,6 +131,7 @@ jobs:
                       docker compose -p prod -f api/docker-compose.prod.yml pull
                       docker compose -p staging -f api/docker-compose.staging.yml pull
 
+                      docker compose -p prod -f docker-compose.prod.yml down
                       # Start the container. If the container hasn't changed, it will not be restarted
                       # -d flag is used to run the container in detached mode
                       docker compose -p prod -f api/docker-compose.prod.yml up -d
