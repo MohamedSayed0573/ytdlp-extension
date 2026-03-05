@@ -27,5 +27,5 @@ export default {
     YOUTUBE_ID_REGEX: /^[a-zA-Z0-9_-]{11}$/,
     CACHE_TTL: 3 * 60 * 60 * 1000, // 3 hour
     SHUTDOWN_TIMEOUT_MS: 30 * 1000, // 30 seconds
-    YTDLP_VERSION: getYTDLPVersion(),
+    YTDLP_VERSION: await getYTDLPVersion(),
 } as const;
