@@ -43,7 +43,7 @@ export async function getFromStorage(tag: string): Promise<StorageData | null> {
     return item;
 }
 
-export async function clearStorage(): Promise<boolean> {
+export async function clearLocalStorage(): Promise<boolean> {
     try {
         await chrome.storage.local.clear();
         return true;

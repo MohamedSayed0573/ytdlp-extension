@@ -104,7 +104,7 @@ function showCachedNote(createdAt: string | undefined) {
     if (timeInMS < 5000) {
         note.textContent = "Just now";
     } else {
-        const timeAgo = ms(timeInMS);
+        const timeAgo = ms(timeInMS, { long: true });
         note.textContent = `Cached ${timeAgo} ago`;
     }
     containerEl.prepend(note);

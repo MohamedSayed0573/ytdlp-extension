@@ -1,5 +1,5 @@
 import { optionIDs, getElement } from "./utils";
-import { clearStorage } from "./cache";
+import { clearLocalStorage } from "./cache";
 
 function displayOptions() {
     const optionsContainer = getElement("options-grid", true);
@@ -35,7 +35,7 @@ const resetBtn = getElement("resetCache", false) as HTMLButtonElement | null;
 resetBtn?.addEventListener("click", async () => {
     const originalText = resetBtn.textContent;
 
-    const success = await clearStorage();
+    const success = await clearLocalStorage();
 
     if (success) {
         resetBtn.textContent = "Cache Cleared!";
