@@ -32,9 +32,5 @@ window.addEventListener("yt-navigate-finish", async () => {
     if (lastTag === tag) return;
     lastTag = tag;
 
-    if (tag) {
-        init(tag);
-    } else {
-        chrome.runtime.sendMessage({ type: "clearBadge" });
-    }
+    if (tag) init(tag);
 });

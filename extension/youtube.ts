@@ -111,7 +111,7 @@ export function parseDataFromYtInitial(data: RawData): RawFormat {
     };
 }
 
-export async function fetchAPI(tag: string) {
+export async function fetchAPI(tag: string): Promise<APIData> {
     const apiUrl = `${__API_URL__}/api/video-sizes/${tag}?humanReadableSizes=true&mergeAudioWithVideo=true`;
 
     const res = await fetchAndRetry(apiUrl, {

@@ -71,8 +71,8 @@ getElement("apiFallback", false)?.addEventListener("change", (event) => {
 
 // Load options from chrome storage when options page is opened
 async function loadOptions() {
-    // Quality Options
     const options = await chrome.storage.sync.get(CONFIG.optionIDs);
+    // Quality Options
     CONFIG.optionIDs.forEach((optionId) => {
         const checkbox = getElement(optionId, false) as HTMLInputElement;
         if (!checkbox) return;
@@ -80,7 +80,7 @@ async function loadOptions() {
     });
 
     // Cache TTL
-    const { cacheTTL = CONFIG.DEFAULT_CACHE_TTL } = await chrome.storage.sync.get("cacheTTL");
+    const { cacheTTL = CONFIG.DEFAULT_CACHE_TTL } = options as { cacheTTL: number };
     const cacheEl = getElement("cacheTTL", false) as HTMLInputElement | null;
     if (cacheEl && cacheTTL && typeof cacheTTL === "number") {
         const days = cacheTTL / (24 * 60 * 60);
@@ -90,7 +90,7 @@ async function loadOptions() {
     const apiFallbackBtn = getElement("apiFallback", false) as HTMLInputElement | null;
     if (apiFallbackBtn) {
         // read the flag from storage (default to false when missing)
-        const { apiFallback = false } = (await chrome.storage.sync.get("apiFallback")) as {
+        const { apiFallback = false } = options as {
             apiFallback: boolean;
         };
         apiFallbackBtn.checked = apiFallback;

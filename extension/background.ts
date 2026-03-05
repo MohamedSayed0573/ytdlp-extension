@@ -1,4 +1,4 @@
-import type { BackgroundResponse } from "./types";
+import type { BackgroundResponse, RawData } from "./types";
 import { getFromStorage, saveToStorage } from "./cache";
 import { addBadge, clearBadge } from "./badge";
 import {
@@ -54,7 +54,7 @@ chrome.runtime.onMessage.addListener(
             }
 
             try {
-                let data;
+                let data: RawData;
                 try {
                     if (message.html) {
                         data = extractYtInitial(message.html);
@@ -85,6 +85,8 @@ chrome.runtime.onMessage.addListener(
                     }
 
                     const apiData = await fetchAPI(tag);
+                    // Do not cache API responses, in order to keep the cache consistent.
+                    // Because the API response is different than the data we extract from the html page.
                     addBadge(tabId);
                     sendResponse({
                         success: true,
