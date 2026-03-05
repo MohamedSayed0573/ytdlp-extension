@@ -12,7 +12,6 @@ export function isYoutubePage(url: string): boolean {
 export function isShortsVideo(url: string): boolean {
     try {
         const parsedUrl = new URL(url);
-        console.log(parsedUrl);
         return parsedUrl.pathname.startsWith("/shorts");
     } catch (err) {
         return false;
@@ -22,7 +21,6 @@ export function isShortsVideo(url: string): boolean {
 export function extractVideoId(ytUrl: string): string | undefined {
     try {
         const parsedUrl = new URL(ytUrl);
-        console.log(parsedUrl);
 
         if (parsedUrl.pathname !== "/watch") return;
 
@@ -84,7 +82,7 @@ export async function fetchAndRetry(
             if (err instanceof Error && err.message.includes("Client Error")) throw err;
 
             // Skip the timeout if the last attempt
-            if (attempt === maxRetries - 1) {
+            if (attempt < maxRetries - 1) {
                 // Exponential backoff before retry
                 await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 1000));
             }
