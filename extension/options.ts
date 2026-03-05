@@ -67,6 +67,12 @@ getElement("cacheTTL", false)?.addEventListener("change", (event) => {
     chrome.storage.sync.set({ cacheTTL: ttlInSeconds.get(value) });
 });
 
+// Listen to choose API fallback checkbox
+getElement("apiFallback", false)?.addEventListener("change", (event) => {
+    const checked = (event.target as HTMLInputElement).checked;
+    chrome.storage.sync.set({ apiFallback: checked });
+});
+
 // Load options from chrome storage when options page is opened
 async function loadOptions() {
     // Quality Options
@@ -84,6 +90,14 @@ async function loadOptions() {
         const days = cacheTTL / (24 * 60 * 60);
         cacheEl.value = String(days);
     }
-}
 
+    const apiFallbackBtn = getElement("apiFallback", false) as HTMLInputElement | null;
+    if (apiFallbackBtn) {
+        // read the flag from storage (default to false when missing)
+        const { apiFallback = false } = (await chrome.storage.sync.get("apiFallback")) as {
+            apiFallback: boolean;
+        };
+        apiFallbackBtn.checked = apiFallback;
+    }
+}
 loadOptions();

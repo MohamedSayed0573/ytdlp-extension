@@ -8,6 +8,7 @@ import {
     parseDataFromYtInitial,
     humanizeData,
 } from "./youtube";
+import { getAPIFallbackOption } from "./utils";
 
 chrome.runtime.onMessage.addListener(
     (
@@ -78,6 +79,11 @@ chrome.runtime.onMessage.addListener(
                 });
             } catch (err) {
                 try {
+                    const useAPIFallback = await getAPIFallbackOption();
+                    if (!useAPIFallback) {
+                        throw new Error("Skipped API Fallback");
+                    }
+
                     const apiData = await fetchAPI(tag);
                     addBadge(tabId);
                     sendResponse({

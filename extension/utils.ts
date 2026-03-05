@@ -92,3 +92,8 @@ export async function fetchAndRetry(
     }
     throw new Error(`Failed after ${maxRetries} tries, last error: ${lastError}`);
 }
+
+export async function getAPIFallbackOption(): Promise<boolean> {
+    const { apiFallback = false } = await chrome.storage.sync.get("apiFallback");
+    return apiFallback as boolean;
+}
