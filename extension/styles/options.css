@@ -163,3 +163,15 @@ input[type="checkbox"]:checked::after {
     background: rgba(255, 59, 59, 0.18);
     border-color: rgba(255, 59, 59, 0.4);
 }
+.author {
+    padding: 10px 12px;
+    text-align: center;
+}
+.author a {
+    color: #888;
+    font-size: 11px;
+    text-decoration: none;
+}
+.author a:hover {
+    color: #4dabf7;
+}
