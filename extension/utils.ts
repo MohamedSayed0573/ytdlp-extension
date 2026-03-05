@@ -58,3 +58,37 @@ export function getElement(id: string, isFatal: boolean = false): HTMLElement | 
     }
     return element;
 }
+
+export async function fetchAndRetry(
+    url: string,
+    options: RequestInit = {},
+    maxRetries = 3,
+): Promise<Response> {
+    let lastError: unknown;
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            const response = await fetch(url, options);
+            if (response.ok) return response;
+
+            // Don't retry client errors (4xx)
+            if (response.status >= 400 && response.status < 500) {
+                throw new Error(`Client Error: ${response.status}, won't retry`);
+            }
+
+            // Server error (5xx) — will retry
+            throw new Error(`Server Error: ${response.status}`);
+        } catch (err) {
+            lastError = err;
+
+            if (err instanceof Error && err.name === "AbortError") throw err;
+            if (err instanceof Error && err.message.includes("Client Error")) throw err;
+
+            // Skip the timeout if the last attempt
+            if (attempt === maxRetries - 1) {
+                // Exponential backoff before retry
+                await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+            }
+        }
+    }
+    throw new Error(`Failed after ${maxRetries} tries, last error: ${lastError}`);
+}

@@ -1,6 +1,7 @@
 import { filesize } from "filesize";
 import { APIData, HumanizedFormat, RawData, RawFormat } from "./types";
 import ms from "ms";
+import { fetchAndRetry } from "./utils";
 
 export function humanizeData(formats: RawFormat): HumanizedFormat {
     const audioSize = getAverageAudioSize(formats.audioFormats);
@@ -124,7 +125,7 @@ export function parseDataFromYtInitial(data: RawData): RawFormat {
 export async function fetchAPI(tag: string) {
     const apiUrl = `${__API_URL__}/api/video-sizes/${tag}?humanReadableSizes=true&mergeAudioWithVideo=true`;
 
-    const res = await fetch(apiUrl, {
+    const res = await fetchAndRetry(apiUrl, {
         method: "GET",
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
