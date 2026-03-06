@@ -61,7 +61,7 @@ async function displayVideoInfo(data: APIData | HumanizedFormat) {
                 return;
             }
 
-            data.videoFormats.forEach((format) => {
+            [...data.videoFormats].reverse().forEach((format) => {
                 // Make the format height compatible with the element IDs
                 const optionKey = format.height ? "p" + format.height : null;
                 if (!optionKey || !enabledOptions.includes(optionKey)) {
