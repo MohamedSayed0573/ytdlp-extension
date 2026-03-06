@@ -73,7 +73,7 @@ async function displayVideoInfo(data: APIData | HumanizedFormat) {
 
                 const heightDiv = document.createElement("div");
                 heightDiv.className = "format-height";
-                heightDiv.textContent = `${format.height}p: (${format.formatId})`;
+                heightDiv.textContent = `${format.height}p`;
 
                 const sizeDiv = document.createElement("div");
                 sizeDiv.className = "format-size";
