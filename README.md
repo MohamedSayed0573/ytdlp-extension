@@ -131,9 +131,7 @@ The extension requests the minimum permissions necessary:
 ## 👤 Author
 
 **Mohammed Sayed**
-
 - LinkedIn: [mohamed-sayed3](https://www.linkedin.com/in/mohamed-sayed3/)
-- GitHub: [MohamedSayed0573](https://github.com/MohamedSayed0573)
 
 ---
 
