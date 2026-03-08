@@ -49,6 +49,16 @@
 
 ### Manual Installation (Developer Mode)
 
+### Build Requirements
+
+The extension source submitted for review can be reproduced with the following environment:
+
+- Operating systems: Linux, macOS, or Windows
+- Node.js: `20.19.4`
+- pnpm: `10.30.3`
+
+### Build Instructions
+
 1. **Clone the repository**
 
     ```bash
@@ -66,12 +76,12 @@
 
     ```bash
     cd extension && pnpm run build
+
     ```
 
-4. **Load in Chrome / Edge**
-    - Navigate to `chrome://extensions`
-    - Enable **Developer mode** (toggle in the top-right corner)
-    - Click **Load unpacked** and select the `extension` folder
+4. **Generated files**
+    - The build outputs bundled files into `extension/dist/`
+    - The Firefox package uses `extension/manifest.firefox.json`
 
 ### Package for Each Browser
 
