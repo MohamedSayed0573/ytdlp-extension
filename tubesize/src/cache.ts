@@ -2,10 +2,8 @@ import CONFIG from "./constants";
 import type { APIData, HumanizedFormat, StorageData } from "./types";
 
 async function getCacheTTLSetting(): Promise<number> {
-    const DEFAULT_CACHE_TTL = CONFIG.DEFAULT_CACHE_TTL; // 3 days in seconds
     const { cacheTTL } = (await chrome.storage.sync.get("cacheTTL")) as { cacheTTL: number };
-
-    return cacheTTL || DEFAULT_CACHE_TTL;
+    return cacheTTL || CONFIG.DEFAULT_CACHE_TTL;
 }
 
 export async function saveToStorage(tag: string, response: APIData | HumanizedFormat | null) {

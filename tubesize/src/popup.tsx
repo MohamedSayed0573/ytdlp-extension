@@ -52,7 +52,7 @@ function Popup() {
     });
 
     const [videoData, setVideoData] = useState<BackgroundResponse | null>(null);
-
+    const [cache, setCache] = useState<string | undefined>("Loading");
     const [useOptionsPage, setUseOptionsPage] = useState(false);
     const [enabledOptions, setEnabledOptions] = useState<string[]>([]);
 
@@ -85,6 +85,7 @@ function Popup() {
 
                 const response = await sendMessageToBackground(tab.id!, tag);
                 setVideoData(response);
+                setCache(getCachedAgo(response.createdAt));
             } catch (err) {
                 setMessage({ type: "error", message: "Error: " + err });
             }
@@ -119,9 +120,7 @@ function Popup() {
                 </button>
             </div>
             <div id="container">
-                <div className="cached-note">
-                    {videoData?.cached ? getCachedAgo(videoData.createdAt) : null}
-                </div>
+                <div className="cached-note">{cache ?? null}</div>
                 {!videoData ? (
                     <span className={message.type}> {message.message}</span>
                 ) : enabledOptions.length === 0 ? (
@@ -134,8 +133,8 @@ function Popup() {
                         ?.map((item) => {
                             return (
                                 <div className="format-item" key={item.formatId}>
-                                    <div className="format-size">{item.size}</div>
                                     <div className="format-height"> {item.height} </div>
+                                    <div className="format-size">{item.size}</div>
                                 </div>
                             );
                         })

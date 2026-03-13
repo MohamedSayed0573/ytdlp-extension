@@ -8,12 +8,16 @@ async function getAllOptions() {
     return allOptions;
 }
 
+function convertDaysToSeconds(days: number | string) {
+    return Number(days) * 24 * 60 * 60;
+}
+
 function Options() {
     const [optionsState, setOptionsState] = useState<{ [key: string]: boolean }>();
     const [cacheState, setCacheState] = useState<string>();
     const [apiFallback, setAPIFallback] = useState(false);
     const [clearCache, setClearCache] = useState("idle");
-    const [disableResetCache, setDisableResetCache] = useState(false);
+    const [disableClearCache, setDisableClearCache] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -69,11 +73,12 @@ function Options() {
                         className="ttl-select"
                         value={cacheState || "3"} // Fallback to "3" days if undefined
                         onChange={async (event) => {
-                            const isChecked = event.target.value;
+                            const days = event.target.value;
+                            const daysInSeconds = convertDaysToSeconds(days);
                             await chrome.storage.sync.set({
-                                cacheTTL: isChecked,
+                                cacheTTL: daysInSeconds,
                             });
-                            setCacheState(isChecked);
+                            setCacheState(days);
                         }}
                     >
                         <option value="1">1 Day</option>
@@ -84,19 +89,19 @@ function Options() {
                 <button
                     id="resetCache"
                     className={`reset-cache-btn ${clearCache}`}
-                    disabled={disableResetCache}
+                    disabled={disableClearCache}
                     onClick={async () => {
-                        setDisableResetCache(true);
+                        setDisableClearCache(true);
                         const success = await clearLocalStorage();
                         if (success) {
                             setClearCache("success");
                             setTimeout(() => {
                                 setClearCache("idle");
-                                setDisableResetCache(false);
+                                setDisableClearCache(false);
                             }, 2000);
                         } else {
                             setClearCache("fail");
-                            setDisableResetCache(false);
+                            setDisableClearCache(false);
                         }
                     }}
                 >
