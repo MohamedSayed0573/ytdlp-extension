@@ -59,9 +59,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
     background: rgba(255, 255, 255, 0.04);
-    padding: 8px 10px;
+    padding: 8px 14px 8px 10px;
     border-radius: 6px;
     cursor: pointer;
     border: 1px solid transparent;
@@ -86,18 +85,12 @@ input[type="checkbox"] {
 input[type="checkbox"]:checked {
     background-color: #4dabf7;
     border-color: #4dabf7;
+    background-image: url("../assets/check-mark-ok.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
-input[type="checkbox"]:checked::after {
-    content: "";
-    position: absolute;
-    left: 3px;
-    top: 1px;
-    width: 3px;
-    height: 6px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-}
+
 .option-label {
     cursor: pointer;
     font-size: 13px;

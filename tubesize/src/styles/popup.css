@@ -63,7 +63,7 @@ body {
     background: rgba(255, 107, 107, 0.1);
     border-radius: 6px;
     border-left: 3px solid #ff6b6b;
-    text-align: left;
+    text-align: center;
     font-size: 13px;
 }
 .info {
@@ -72,7 +72,7 @@ body {
     background: rgba(77, 171, 247, 0.1);
     border-radius: 6px;
     border-left: 3px solid #4dabf7;
-    text-align: left;
+    text-align: center;
     font-size: 13px;
 }
 .formats-section {
