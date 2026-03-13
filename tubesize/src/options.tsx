@@ -13,6 +13,7 @@ function Options() {
     const [cacheState, setCacheState] = useState<string>();
     const [apiFallback, setAPIFallback] = useState(false);
     const [clearCache, setClearCache] = useState("idle");
+    const [disableResetCache, setDisableResetCache] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -80,13 +81,19 @@ function Options() {
                 <button
                     id="resetCache"
                     className={`reset-cache-btn ${clearCache}`}
+                    disabled={disableResetCache}
                     onClick={async () => {
+                        setDisableResetCache(true);
                         const success = await clearLocalStorage();
                         if (success) {
                             setClearCache("success");
-                            setTimeout(() => setClearCache("idle"), 2000);
+                            setTimeout(() => {
+                                setClearCache("idle");
+                                setDisableResetCache(false);
+                            }, 2000);
                         } else {
                             setClearCache("fail");
+                            setDisableResetCache(false);
                         }
                     }}
                 >

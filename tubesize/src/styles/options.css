@@ -152,6 +152,10 @@ input[type="checkbox"]:checked {
     text-align: center;
 }
 
+.reset-cache-btn:disabled {
+    cursor: default;
+}
+
 /* idle */
 .reset-cache-btn.idle {
     background: rgba(255, 59, 59, 0.08);
