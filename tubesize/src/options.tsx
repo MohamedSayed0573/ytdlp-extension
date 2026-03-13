@@ -20,6 +20,7 @@ function Options() {
             setOptionsState(options as any);
 
             setCacheState(options.cacheTTL as string);
+            setAPIFallback(!!options.apiFallback);
         })();
     }, []);
 
@@ -99,7 +100,18 @@ function Options() {
                 <div className="section-title">API Fallback</div>
                 <div className="api-fallback-row">
                     <label className="api-fallback-toggle" htmlFor="apiFallback">
-                        <input type="checkbox" id="apiFallback" />
+                        <input
+                            type="checkbox"
+                            id="apiFallback"
+                            checked={apiFallback}
+                            onChange={async (event) => {
+                                const isChecked = event.target.checked;
+                                await chrome.storage.sync.set({
+                                    apiFallback: isChecked,
+                                });
+                                setAPIFallback(isChecked);
+                            }}
+                        />
                         <span className="api-fallback-label">Use backup server</span>
                     </label>
                     <div className="info-tooltip">
@@ -107,15 +119,8 @@ function Options() {
                             type="button"
                             className="info-tooltip-trigger"
                             aria-label="More information about API fallback"
-                            onClick={async () => {
-                                const isChecked = !apiFallback;
-                                await chrome.storage.sync.set({
-                                    apiFallback: isChecked,
-                                });
-                                setAPIFallback(isChecked);
-                            }}
                         ></button>
-                        <div className="i  nfo-tooltip-content" role="tooltip">
+                        <div className="info-tooltip-content" role="tooltip">
                             Uses our backup server when local extraction fails. It can be slower.
                             See
                             <a
