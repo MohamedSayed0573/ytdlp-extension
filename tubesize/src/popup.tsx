@@ -15,8 +15,12 @@ async function sendMessageToBackground(tabId: number, videoTag: string) {
         chrome.runtime.sendMessage(
             { type: "sendYoutubeUrl", tag: videoTag, tabId: tabId },
             (response) => {
-                if (!response.success) {
-                    reject(new Error(chrome.runtime.lastError?.message));
+                if (chrome.runtime.lastError) {
+                    reject(new Error(chrome.runtime.lastError.message));
+                    return;
+                }
+                if (!response?.success) {
+                    reject(new Error(response?.message || "Failed to fetch video data"));
                     return;
                 }
                 resolve(response);
@@ -29,10 +33,10 @@ function getCachedAgo(createdAt: string | undefined) {
     if (!createdAt) return;
     const timeInMs = new Date().getTime() - new Date(createdAt).getTime();
     if (timeInMs < CONFIG.CACHE_JUST_NOW_THRESHOLD) {
-        return "Just now";
+        return "Cached just now";
     } else {
         const timeAgo = ms(timeInMs, { long: true });
-        return timeAgo;
+        return `Cached ${timeAgo} ago`;
     }
 }
 
@@ -52,7 +56,7 @@ function Popup() {
     });
 
     const [videoData, setVideoData] = useState<BackgroundResponse | null>(null);
-    const [cache, setCache] = useState<string | undefined>("Loading");
+    const [cache, setCache] = useState<string | undefined>(undefined);
     const [useOptionsPage, setUseOptionsPage] = useState(false);
     const [enabledOptions, setEnabledOptions] = useState<string[]>([]);
 
@@ -87,7 +91,11 @@ function Popup() {
                 setVideoData(response);
                 setCache(getCachedAgo(response.createdAt));
             } catch (err) {
-                setMessage({ type: "error", message: "Error: " + err });
+                const errorMessage = err instanceof Error ? err.message : String(err);
+                console.error("[Popup Error]:", errorMessage);
+                setMessage({ type: "error", message: errorMessage });
+                setVideoData(null);
+                setCache(undefined);
             }
         })();
     }, []);
@@ -120,7 +128,7 @@ function Popup() {
                 </button>
             </div>
             <div id="container">
-                <div className="cached-note">{cache ?? null}</div>
+                {cache && <div className="cached-note">{cache}</div>}
                 {!videoData ? (
                     <span className={message.type}> {message.message}</span>
                 ) : enabledOptions.length === 0 ? (
