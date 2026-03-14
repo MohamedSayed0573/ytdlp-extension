@@ -4,7 +4,6 @@ import env from "./utils/env.js";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
-import ms from "ms";
 import compression from "@fastify/compress";
 import swagger from "@fastify/swagger";
 import swaggerUI from "@fastify/swagger-ui";
@@ -21,6 +20,7 @@ import apiRoutes from "./routes/api.js";
 import { redis } from "./utils/cache.js";
 import logger from "./utils/logger.js";
 import CONFIG from "./config/constants.js";
+import { healthRoutes } from "./routes/health.js";
 
 const fastify = Fastify({
     loggerInstance: logger,
@@ -96,17 +96,8 @@ fastify.register(swaggerUI, {
 });
 
 // Routes
+fastify.register(healthRoutes);
 fastify.register(apiRoutes, { prefix: "/api" });
-
-fastify.get("/health", (req: FastifyRequest, res: FastifyReply) => {
-    res.send({
-        status: "ok",
-        uptime: ms(Math.round(process.uptime()) * 1000),
-        timestamp: new Date().toISOString(),
-        redisStatus: redis.isReady ? "ready" : redis.isOpen ? "connecting" : "closed",
-        ytdlpVersion: CONFIG.YTDLP_VERSION,
-    });
-});
 
 fastify.setNotFoundHandler((req: FastifyRequest, res: FastifyReply) => {
     res.status(404).send({ error: "Route not found" });

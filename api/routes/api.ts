@@ -9,7 +9,7 @@ import { getVideoInfo, validateVideoTag } from "../utils/ytdlp.js";
 import ms from "ms";
 import { checkCache, setCache } from "../utils/cache.js";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { videoSizesRouteSchema } from "../schema.js";
+import { videoSizesRouteSchema } from "../schema/videoSizesSchema.js";
 
 export async function apiRoutes(fastify: FastifyInstance) {
     fastify.withTypeProvider<ZodTypeProvider>().get(
