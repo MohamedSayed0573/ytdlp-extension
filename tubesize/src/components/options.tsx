@@ -1,10 +1,10 @@
-import "./styles/options.css";
-import CONFIG from "./constants";
+import "../styles/options.css";
+import CONFIG from "../constants";
 import { useEffect, useState } from "react";
-import { clearLocalStorage } from "./cache";
+import { clearLocalStorage, getFromSyncCache, setToSyncCache } from "../cache";
 
 async function getAllOptions() {
-    const allOptions = await chrome.storage.sync.get();
+    const allOptions = await getFromSyncCache();
     return allOptions;
 }
 
@@ -44,7 +44,7 @@ function Options() {
                         return (
                             <div className="option-item" key={option}>
                                 <label className="option-label" htmlFor={option}>
-                                    {option}
+                                    {option.substring(1) + "p"}
                                 </label>
                                 <input
                                     id={option}
@@ -52,7 +52,7 @@ function Options() {
                                     checked={optionsState?.[option] ?? true}
                                     onChange={async (event) => {
                                         const isChecked = event.target.checked;
-                                        await chrome.storage.sync.set({
+                                        await setToSyncCache({
                                             [option]: isChecked,
                                         });
                                         setOptionsState({ ...optionsState, [option]: isChecked });
@@ -75,7 +75,7 @@ function Options() {
                         onChange={async (event) => {
                             const days = event.target.value;
                             const daysInSeconds = convertDaysToSeconds(days);
-                            await chrome.storage.sync.set({
+                            await setToSyncCache({
                                 cacheTTL: daysInSeconds,
                             });
                             setCacheState(days);
@@ -93,6 +93,7 @@ function Options() {
                     onClick={async () => {
                         setDisableClearCache(true);
                         const success = await clearLocalStorage();
+
                         if (success) {
                             setClearCache("success");
                             setTimeout(() => {
@@ -120,7 +121,7 @@ function Options() {
                             checked={apiFallback}
                             onChange={async (event) => {
                                 const isChecked = event.target.checked;
-                                await chrome.storage.sync.set({
+                                await setToSyncCache({
                                     apiFallback: isChecked,
                                 });
                                 setAPIFallback(isChecked);

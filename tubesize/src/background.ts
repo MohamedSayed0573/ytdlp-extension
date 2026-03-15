@@ -1,4 +1,4 @@
-import type { BackgroundResponse, RawData } from "./types";
+import type { BackgroundResponse, RawData } from "./types/types";
 import { getFromStorage, saveToStorage } from "./cache";
 import { addBadge, clearBadge } from "./badge";
 import {

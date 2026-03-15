@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { extractVideoTag, isYoutubePage, isShortsVideo } from "./utils";
+import { extractVideoTag, isYoutubePage, isShortsVideo } from "../utils";
 import Options from "./options.tsx";
-import "./styles/popup.css";
-import type { BackgroundResponse } from "./types";
-import CONFIG from "./constants";
+import "../styles/popup.css";
+import type { BackgroundResponse } from "../types/types.ts";
+import CONFIG from "../constants";
 import ms from "ms";
+import { getFromSyncCache } from "../cache.ts";
 
 async function getTab() {
     return await chrome.tabs.query({ active: true, currentWindow: true });
@@ -41,7 +42,7 @@ function getCachedAgo(createdAt: string | undefined) {
 }
 
 async function getOptions() {
-    return await chrome.storage.sync.get(CONFIG.optionIDs);
+    return await getFromSyncCache(CONFIG.optionIDs);
 }
 
 type Message = {

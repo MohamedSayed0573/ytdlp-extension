@@ -12,4 +12,7 @@ export default defineConfig({
         }),
         [webExtension({ disableAutoLaunch: true })],
     ],
+    define: {
+        __API_URL__: JSON.stringify("https://api.mohammedsayed.dev"),
+    },
 });
