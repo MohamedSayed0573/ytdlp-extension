@@ -105,9 +105,13 @@ export async function getAllVideoMetadata() {
 }
 
 export async function clearDatabaseData() {
-    await Promise.all([
-        database.siteUsage.clear(),
-        database.watchHistory.clear(),
-        database.videoMetaData.clear(),
-    ]);
+    await database.transaction(
+        "readwrite",
+        [database.siteUsage, database.watchHistory, database.videoMetaData],
+        async () => {
+            await database.siteUsage.clear();
+            await database.watchHistory.clear();
+            await database.videoMetaData.clear();
+        },
+    );
 }
