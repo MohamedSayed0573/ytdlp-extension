@@ -131,8 +131,6 @@ async function recordVideoMetadata(videoTag: string) {
 }
 
 // Track total bytes.
-// Fetch responses are skipped because the Fetch monkey patch already catches them.
-// XMLHttpRequest responses are skipped because they are already counted by the PerformanceObserver in genericObserver.ts
 let originToTotal: Record<string, number> = {};
 let watchHistory: Record<string, number> = {};
 chrome.webRequest.onCompleted.addListener(
@@ -140,15 +138,21 @@ chrome.webRequest.onCompleted.addListener(
         if (details.tabId === -1) return; // requests not tied to a tab (extensions, service workers) should be skipped
         if (details.url.startsWith("chrome-extension://")) return; // requests from the extension itself should not be counted as wire usage
         if (details.fromCache) return; // responses from the browser cache should not be counted as wire usage
-        if (details.type === "xmlhttprequest") return; // XMLHttpRequest responses are already counted by the PerformanceObserver in genericObserver.ts
         if (details.method === "HEAD") return; // HEAD requests have content length of a body that is never sent.
 
         const contentLength = details.responseHeaders?.find((header) => {
             return header.name.toLowerCase() === "content-length";
         });
-        if (!contentLength || !contentLength.value || Number(contentLength.value) <= 0) return; // responses with no content length should be skipped
-        if (!details.initiator) return;
+        // responses with no content length should be handled by the Fetch monkey patch in genericObserver.ts
+        if (
+            !contentLength ||
+            !contentLength.value ||
+            !Number.isFinite(Number(contentLength.value)) ||
+            Number(contentLength.value) <= 0
+        )
+            return;
 
+        if (!details.initiator) return;
         const origin = details.initiator;
         originToTotal[origin] = (originToTotal[origin] ?? 0) + Number(contentLength.value);
 

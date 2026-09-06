@@ -8,11 +8,10 @@ const _fetch = fetch;
 // eslint-disable-next-line unicorn/no-global-object-property-assignment
 globalThis.fetch = async (...args) => {
     const response = await _fetch(...args);
-    const hasContentLength = response.headers.has("content-length");
-    if (hasContentLength) {
-        total += Number(response.headers.get("content-length"));
-        return response;
-    }
+
+    const contentLength = response.headers.get("content-length");
+    // Background.ts's chrome.webRequest is responsible for tracking requests with known content length.
+    if (contentLength && Number(contentLength) > 0) return response;
 
     const clone = response.clone();
 
@@ -28,29 +27,13 @@ globalThis.fetch = async (...args) => {
             bytes += value.byteLength;
         }
         total += bytes;
-    })().catch((err) => console.error(err));
+    })().catch((err) => {
+        if (err instanceof Error && err.name === "AbortError") return;
+        console.error(err);
+    });
 
     return response;
 };
-
-// chrome.webRequest skips both Fetch and XHR. We already monkey-patch the fetch function.
-// Thus, we only need to observe XMLHttpRequest entries here.
-const observer = new PerformanceObserver((entries, _) => {
-    const _entries = entries.getEntries();
-    for (const entry of _entries) {
-        const resource = entry as PerformanceResourceTiming & {
-            deliveryType: "cache" | "cache-storage" | "";
-        };
-
-        if (resource.deliveryType === "cache" || resource.deliveryType === "cache-storage")
-            continue;
-
-        if (resource.initiatorType === "xmlhttprequest") {
-            total += resource.transferSize;
-        }
-    }
-});
-observer.observe({ type: "resource", buffered: true });
 
 setInterval(() => {
     if (total === 0) return;
