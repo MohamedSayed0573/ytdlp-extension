@@ -23,6 +23,8 @@ export default defineManifest({
             // matches: ["https://*.youtube.com/*", "https://*.twitch.tv/*", "https://*.kick.com/*"],
             matches: ["<all_urls>"],
             js: ["src/content.ts"],
+            all_frames: true,
+            run_at: "document_start",
         },
         {
             matches: ["<all_urls>"],
