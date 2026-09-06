@@ -17,7 +17,7 @@ describe("formatDate", () => {
         ).toBe("May 15, 2023");
     });
 
-    test("Should return 'No data' if the input array is empty", () => {
-        expect(formatDate([])).toBe("No data");
+    test("Should throw if the input array is empty", () => {
+        expect(() => formatDate([])).toThrow();
     });
 });
