@@ -22,7 +22,7 @@
 
 ---
 
-TubeSize is a lightweight, premium browser extension that estimates data usage and file sizes for YouTube, Twitch, and Kick streams in real-time. It features an interactive daily usage analytics dashboard, custom threshold data alerts, and direct integration into video players.
+TubeSize is a lightweight, premium browser extension that estimates data usage and file sizes for YouTube, Twitch, and Kick streams in real-time. It features an interactive daily usage dashboard, custom threshold data alerts, and direct integration into video players.
 
 ## Installation
 
@@ -62,7 +62,7 @@ TubeSize is a lightweight, premium browser extension that estimates data usage a
 <br>
 
 <div align="center">
-  <img width="1280" height="800" alt="analytics" src="https://github.com/user-attachments/assets/96d61287-64ad-41e5-8eb1-9e5e32cb839d" />
+  <img width="1280" height="800" alt="dashboard" src="https://github.com/user-attachments/assets/96d61287-64ad-41e5-8eb1-9e5e32cb839d" />
   <img alt="twitch1" src="https://github.com/user-attachments/assets/c56770f5-08ee-4a17-8ce1-3e05dcf13d5a" width="48%" />
 </div>
 
@@ -73,7 +73,7 @@ TubeSize is a lightweight, premium browser extension that estimates data usage a
 - **YouTube Quality Estimates**: View calculated file sizes for standard resolutions on video pages, Shorts, and Live streams.
 - **Twitch Stream Diagnostics**: Compare data consumption across resolutions for live streams and VODs.
 - **Kick Platform Support (New)**: Compare data usage estimates for Kick live streams and VODs using HLS stream bandwidth profiles.
-- **Data Usage Analytics Dashboard (New)**: Track your daily YouTube data usage dynamically. View usage metrics across:
+- **Data Usage Dashboard (New)**: Track your daily YouTube data usage dynamically. View usage metrics across:
     - Today, Last 7 Days, Last 30 Days, and Lifetime totals.
     - Interactive daily bandwidth consumption graphs built with Recharts.
     - Granular breakdown of videos watched, complete with thumbnails, channel names, and exact data consumed.
@@ -81,7 +81,7 @@ TubeSize is a lightweight, premium browser extension that estimates data usage a
 - **Bandwidth Warning Toasts**: Set data thresholds in Settings and receive automated notifications if a stream's bitrate exceeds your limits.
 - **Quality Menu Integration**: Embed calculated file size details directly inside YouTube's native player settings and quality selection dropdowns.
 - **Keyboard Shortcut**: Open the TubeSize extension popup at any time using `Alt+P` (or custom hotkey).
-- **Modern Options Panel**: Customize cache time-to-live (TTL), adjust notification triggers, clear analytics/caches, and filter custom streaming qualities.
+- **Modern Options Panel**: Customize cache time-to-live (TTL), adjust notification triggers, clear dashboard data/caches, and filter custom streaming qualities.
 
 ---
 
@@ -89,19 +89,19 @@ TubeSize is a lightweight, premium browser extension that estimates data usage a
 
 The extension requests the minimum permissions required to perform client-side analysis and local usage tracking:
 
-| Permission                                          | Why                                                                   |
-| :-------------------------------------------------- | :-------------------------------------------------------------------- |
-| `activeTab`                                         | Read the current tab's URL to detect YouTube, Twitch, or Kick pages.  |
-| `storage`                                           | Cache stream metadata, user preferences, and usage analytics locally. |
-| `host_permissions: *.youtube.com`                   | Read YouTube pages and parse player initial configurations locally.   |
-| `host_permissions: *.twitch.tv`                     | Query Twitch GQL APIs to retrieve stream token hashes.                |
-| `host_permissions: gql.twitch.tv`                   | Request authorization payloads for Twitch stream playbacks.           |
-| `host_permissions: usher.ttvnw.net`                 | Retrieve HLS master playlists to map resolutions and bitrates.        |
-| `host_permissions: *.playlist.ttvnw.net`            | Read dynamic stream playlist streams.                                 |
-| `host_permissions: *.cloudfront.hls.ttvnw.net`      | Connect to Twitch media CDNs for packet analysis.                     |
-| `host_permissions: *.kick.com`                      | Fetch Kick channel, live stream HTML, and VOD session records.        |
-| `host_permissions: *.playback.live-video.net`       | Retrieve Kick live master M3U8 streams via the IVS Player API.        |
-| `host_permissions: *.cloudfront.hls.live-video.net` | Analyze Kick video chunks on Amazon Interactive Video Service.        |
+| Permission                                          | Why                                                                        |
+| :-------------------------------------------------- | :------------------------------------------------------------------------- |
+| `activeTab`                                         | Read the current tab's URL to detect YouTube, Twitch, or Kick pages.       |
+| `storage`                                           | Cache stream metadata, user preferences, and usage dashboard data locally. |
+| `host_permissions: *.youtube.com`                   | Read YouTube pages and parse player initial configurations locally.        |
+| `host_permissions: *.twitch.tv`                     | Query Twitch GQL APIs to retrieve stream token hashes.                     |
+| `host_permissions: gql.twitch.tv`                   | Request authorization payloads for Twitch stream playbacks.                |
+| `host_permissions: usher.ttvnw.net`                 | Retrieve HLS master playlists to map resolutions and bitrates.             |
+| `host_permissions: *.playlist.ttvnw.net`            | Read dynamic stream playlist streams.                                      |
+| `host_permissions: *.cloudfront.hls.ttvnw.net`      | Connect to Twitch media CDNs for packet analysis.                          |
+| `host_permissions: *.kick.com`                      | Fetch Kick channel, live stream HTML, and VOD session records.             |
+| `host_permissions: *.playback.live-video.net`       | Retrieve Kick live master M3U8 streams via the IVS Player API.             |
+| `host_permissions: *.cloudfront.hls.live-video.net` | Analyze Kick video chunks on Amazon Interactive Video Service.             |
 
 ---
 
@@ -109,15 +109,15 @@ The extension requests the minimum permissions required to perform client-side a
 
 TubeSize is an modern, extension-first project. The legacy API under `api/` is fully deprecated and is no longer used by the extension.
 
-| Layer                 | Technology                                                                                         |
-| :-------------------- | :------------------------------------------------------------------------------------------------- |
-| **Frontend & UI**     | React 19, TypeScript, Vite, React Router v7, Recharts, CSS Variables                               |
-| **Testing**           | Jest, ts-jest, jest-extended                                                                       |
-| **Linting & Tooling** | ESLint 10, Knip, Prettier, Husky, Lint-Staged                                                      |
-| **Local Cache**       | `chrome.storage.local` (media cache, daily analytics) and `chrome.storage.sync` (user preferences) |
-| **Data Parsing**      | Zod (schema verification) & `m3u8-parser` (Twitch/Kick streams)                                    |
-| **Packaging**         | `@crxjs/vite-plugin` (Manifest V3 integration), zip packaging                                      |
-| **CI/CD**             | GitHub Actions                                                                                     |
+| Layer                 | Technology                                                                                              |
+| :-------------------- | :------------------------------------------------------------------------------------------------------ |
+| **Frontend & UI**     | React 19, TypeScript, Vite, React Router v7, Recharts, CSS Variables                                    |
+| **Testing**           | Jest, ts-jest, jest-extended                                                                            |
+| **Linting & Tooling** | ESLint 10, Knip, Prettier, Husky, Lint-Staged                                                           |
+| **Local Cache**       | `chrome.storage.local` (media cache, daily dashboard data) and `chrome.storage.sync` (user preferences) |
+| **Data Parsing**      | Zod (schema verification) & `m3u8-parser` (Twitch/Kick streams)                                         |
+| **Packaging**         | `@crxjs/vite-plugin` (Manifest V3 integration), zip packaging                                           |
+| **CI/CD**             | GitHub Actions                                                                                          |
 
 ---
 
@@ -160,7 +160,7 @@ flowchart TD
     KK_Parse --> KK_Show[Display estimates & cache VOD results]
 ```
 
-### Real-Time YouTube Analytics & Badge Flow
+### Real-Time YouTube Dashboard & Badge Flow
 
 Bandwidth usage tracking runs fully locally in your browser to maintain strict privacy:
 

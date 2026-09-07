@@ -1,18 +1,18 @@
 import { useParams, useSearchParams } from "react-router";
-import AnalyticsHeader from "@pages/analytics/components/analyticsHeader";
-import NoUsageData from "@pages/analytics/components/noUsageData";
-import UsageDetailsSkeleton from "@pages/analytics/components/usageDetailsSkeleton";
-import VideosTable, { type VideoRowDetails } from "@pages/analytics/components/videosTable";
-import { PlatformLogo } from "@pages/analytics/components/platformLogos";
+import DashboardHeader from "@pages/dashboard/components/dashboardHeader";
+import NoUsageData from "@pages/dashboard/components/noUsageData";
+import UsageDetailsSkeleton from "@pages/dashboard/components/usageDetailsSkeleton";
+import VideosTable, { type VideoRowDetails } from "@pages/dashboard/components/videosTable";
+import { PlatformLogo } from "@pages/dashboard/components/platformLogos";
 import {
     getScopeLabel,
     parseUsageScope,
     parseVideoKey,
-} from "@pages/analytics/components/platformUtils";
+} from "@pages/dashboard/components/platformUtils";
 import { useVideoMetadata } from "@hooks/useVideoMetadata";
 import { useWatchHistory } from "@hooks/useWatchHistory";
 import { capitalize, isPlatformId } from "@lib/utils";
-import AnalyticsNotFound from "../analyticsNotFound";
+import DashboardNotFound from "../dashboardNotFound";
 
 export default function PlatformUsage() {
     const { platformId } = useParams();
@@ -26,7 +26,7 @@ export default function PlatformUsage() {
     const metadataQuery = useVideoMetadata();
 
     if (!platformId || !isPlatformId(platformId)) {
-        return <AnalyticsNotFound />;
+        return <DashboardNotFound />;
     }
 
     if (historyQuery.isPending) return <UsageDetailsSkeleton />;
@@ -66,7 +66,7 @@ export default function PlatformUsage() {
 
     return (
         <>
-            <AnalyticsHeader title={label} totalDataUsage={totalDataUsage} />
+            <DashboardHeader title={label} totalDataUsage={totalDataUsage} />
             <div className="flex flex-1 flex-col bg-neutral-950 p-8">
                 <div className="mb-4 flex items-center gap-4">
                     <PlatformLogo platform={platform} />

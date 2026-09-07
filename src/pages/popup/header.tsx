@@ -109,17 +109,17 @@ export default function Header({ data }: Props) {
                 </button>
                 <button
                     className="flex-1 cursor-pointer rounded-lg border border-white/8 bg-white/8 p-2 text-xs text-neutral-100 transition-colors hover:border-white/15 hover:bg-white/15"
-                    onClick={navigateToAnalytics}
+                    onClick={navigateToDashboard}
                 >
-                    Analytics
+                    Dashboard
                 </button>
             </div>
         </div>
     );
 }
 
-function navigateToAnalytics() {
+function navigateToDashboard() {
     void chrome.tabs.create({
-        url: chrome.runtime.getURL("index.html#/analytics"),
+        url: chrome.runtime.getURL("index.html#/dashboard"),
     });
 }

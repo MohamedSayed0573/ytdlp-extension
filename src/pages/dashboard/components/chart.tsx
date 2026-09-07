@@ -85,7 +85,7 @@ export function Chart({ usage }: { usage: SiteUsage[] }) {
                             maxBarSize={38}
                             onClick={(data) => {
                                 const date = (data.payload as { date: string }).date;
-                                void navigate(`/analytics/${date}`);
+                                void navigate(`/dashboard/${date}`);
                             }}
                         />
                     </BarChart>
