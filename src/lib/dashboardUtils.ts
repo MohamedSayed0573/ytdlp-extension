@@ -25,18 +25,6 @@ export function getLastNDays(n: number): DateKey[] {
     return lastNDays;
 }
 
-export function getTodaySiteUsage(usage: SiteUsage[]) {
-    return usage.filter((u) => getLastNDays(1).includes(u.day));
-}
-
-export function getWeekSiteUsage(usage: SiteUsage[]) {
-    return usage.filter((u) => getLastNDays(7).includes(u.day));
-}
-
-export function getMonthSiteUsage(usage: SiteUsage[]) {
-    return usage.filter((u) => getLastNDays(30).includes(u.day));
-}
-
 /**
  * Returns the date key for a given date in the format "YYYY-MM-DD".
  * @example "2023-05-15"
