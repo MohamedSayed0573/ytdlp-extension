@@ -18,6 +18,7 @@ export interface VideoMetadata {
     title: string;
     channelName: string;
     thumbnailUrl: string;
+    ownerProfileUrl?: string;
 }
 
 const database = new Dexie("TubeSize") as Dexie & {

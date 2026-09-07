@@ -27,6 +27,7 @@ export interface VideoRowDetails {
     title: string | undefined;
     thumbnailUrl: string | undefined;
     channelName: string | undefined;
+    ownerProfileUrl: string | undefined;
     date: DateKey;
 }
 
@@ -70,14 +71,19 @@ export default function VideoTableRow({
                         </a>
                     </span>
                     {videoDetails.channelName && (
-                        <span className="truncate text-sm text-gray-500 hover:underline">
-                            <a
-                                href={`https://www.youtube.com/@${videoDetails.channelName}`}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                {videoDetails.channelName}
-                            </a>
+                        <span className="truncate text-sm text-gray-500">
+                            {videoDetails.ownerProfileUrl ? (
+                                <a
+                                    className="hover:underline"
+                                    href={videoDetails.ownerProfileUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    {videoDetails.channelName}
+                                </a>
+                            ) : (
+                                videoDetails.channelName
+                            )}
                         </span>
                     )}
                     <span className="truncate text-sm font-normal">

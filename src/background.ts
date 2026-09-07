@@ -120,6 +120,7 @@ async function recordVideoMetadata(videoTag: string) {
                 videoTag,
                 title: data.type === "video" ? data.title : data.channelName || "Youtube",
                 channelName: data.channelName ?? "",
+                ownerProfileUrl: data.ownerProfileUrl,
                 thumbnailUrl:
                     data.thumbnailUrl ?? "https://www.youtube.com/img/desktop/yt_1200.png",
             },
@@ -322,6 +323,7 @@ async function handleYoutube(
 
         const rawData = await extractYtInitialResponse(videoTag, html);
         const isLive = rawData.videoDetails.isLive;
+        const ownerProfileUrl = rawData.microformat?.playerMicroformatRenderer.ownerProfileUrl;
 
         if (isLive) {
             const rawFormats = parseDataFromYtInitial(rawData);
@@ -333,6 +335,7 @@ async function handleYoutube(
                 formats: youtubeData.toSorted((a, b) => b.resolution - a.resolution),
                 type: "live",
                 thumbnailUrl,
+                ownerProfileUrl,
             };
             await saveToStorage(videoTag, data, "youtube");
 
@@ -351,6 +354,7 @@ async function handleYoutube(
             id: rawData.videoDetails.videoId,
             thumbnailUrl: getThumbnailUrl(rawData),
             channelName: rawData.videoDetails.author,
+            ownerProfileUrl,
         };
         await saveToStorage(videoTag, youtubeData, "youtube");
         return sendResponse({

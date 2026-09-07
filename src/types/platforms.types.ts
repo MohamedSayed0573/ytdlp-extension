@@ -51,6 +51,7 @@ export type YoutubeVideoData = {
     isShorts?: boolean;
     thumbnailUrl: string | undefined;
     channelName: string | undefined;
+    ownerProfileUrl: string | undefined;
 };
 
 type YoutubeLiveData = {
@@ -58,6 +59,7 @@ type YoutubeLiveData = {
     formats: StreamInfo[];
     channelName: string;
     thumbnailUrl: string | undefined;
+    ownerProfileUrl: string | undefined;
 };
 
 export type YoutubeData = YoutubeVideoData | YoutubeLiveData;
