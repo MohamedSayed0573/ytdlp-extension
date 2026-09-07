@@ -14,6 +14,7 @@ import { useWatchHistory } from "@hooks/useWatchHistory";
 import { capitalize } from "@lib/utils";
 import type { PlatformId } from "@app-types/types";
 import AnalyticsNotFound from "../analyticsNotFound";
+import CONFIG from "@lib/constants";
 
 export default function PlatformUsage() {
     const { platformId } = useParams();
@@ -26,7 +27,7 @@ export default function PlatformUsage() {
     const watchHistory = historyQuery.data?.history;
     const metadataQuery = useVideoMetadata();
 
-    if (platformId !== "youtube" && platformId !== "twitch" && platformId !== "kick") {
+    if (!platformId || !CONFIG.PLATFORMS.includes(platformId)) {
         return <AnalyticsNotFound />;
     }
 

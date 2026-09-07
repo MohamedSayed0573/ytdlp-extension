@@ -22,6 +22,8 @@ const ttlInSecondsToDays = Object.fromEntries(
     Object.entries(ttlInSecondsOptions).map(([key, value]) => [value, key]),
 );
 
+const PLATFORMS = ["youtube", "twitch", "kick"];
+
 const DEFAULT_CACHE_TTL = ttlInSecondsOptions["3"];
 
 const DEFAULT_TOASTER_THRESHOLD_UNIT: OptionsMap["toasterThresholdUnit"] = "mbPerHour";
@@ -50,7 +52,7 @@ const CONFIG = {
     DEFAULT_QUALITY_MENU_ENABLED: true,
     NUMBER_OF_SEGMENTS_TO_CHECK: 10,
     RANGES: ["today", "week", "month", "lifetime"],
-    PLATFORMS: ["youtube", "twitch", "kick"],
+    PLATFORMS,
     TWITCH_GQL_GRAPHQL_QUERY: `
         query PlaybackAccessToken_Template(
         $login: String!,
