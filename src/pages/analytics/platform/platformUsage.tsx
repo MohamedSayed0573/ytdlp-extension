@@ -34,9 +34,8 @@ export default function PlatformUsage() {
     if (metadataQuery.isPending) return <UsageDetailsSkeleton />;
     if (metadataQuery.isError) throw metadataQuery.error;
 
-    const metadata = metadataQuery.data;
-
-    if (!watchHistory || !metadata || metadata.length === 0) return <NoUsageData />;
+    if (!watchHistory) return <NoUsageData />;
+    const metadata = metadataQuery.data ?? [];
 
     // Merge Watch History and Video Metadata into one Array shape.
     // Filter based on the platform
