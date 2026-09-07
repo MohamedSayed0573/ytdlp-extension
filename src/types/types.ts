@@ -1,4 +1,4 @@
-import type CONFIG from "@lib/constants";
+import CONFIG from "@lib/constants";
 import type { KickData, TwitchData, YoutubeData } from "./platforms.types";
 
 type Prettify<T> = {

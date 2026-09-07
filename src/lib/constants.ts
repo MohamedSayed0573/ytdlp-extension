@@ -22,7 +22,7 @@ const ttlInSecondsToDays = Object.fromEntries(
     Object.entries(ttlInSecondsOptions).map(([key, value]) => [value, key]),
 );
 
-const PLATFORMS = ["youtube", "twitch", "kick"];
+const PLATFORMS = ["youtube", "twitch", "kick"] as const;
 
 const DEFAULT_CACHE_TTL = ttlInSecondsOptions["3"];
 

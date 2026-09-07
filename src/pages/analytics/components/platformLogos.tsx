@@ -14,7 +14,7 @@ const PLATFORM_RING = {
     youtube: "ring-red-900/60 shadow-red-950/50",
     twitch: "ring-violet-900/60 shadow-violet-950/50",
     kick: "ring-lime-900/60 shadow-lime-950/50",
-};
+} as const;
 
 export function PlatformLogo({ platform }: { platform: PlatformId }) {
     return (

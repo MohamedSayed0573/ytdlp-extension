@@ -11,10 +11,8 @@ import {
 } from "@pages/analytics/components/platformUtils";
 import { useVideoMetadata } from "@hooks/useVideoMetadata";
 import { useWatchHistory } from "@hooks/useWatchHistory";
-import { capitalize } from "@lib/utils";
-import type { PlatformId } from "@app-types/types";
+import { capitalize, isPlatformId } from "@lib/utils";
 import AnalyticsNotFound from "../analyticsNotFound";
-import CONFIG from "@lib/constants";
 
 export default function PlatformUsage() {
     const { platformId } = useParams();
@@ -27,7 +25,7 @@ export default function PlatformUsage() {
     const watchHistory = historyQuery.data?.history;
     const metadataQuery = useVideoMetadata();
 
-    if (!platformId || !CONFIG.PLATFORMS.includes(platformId)) {
+    if (!platformId || !isPlatformId(platformId)) {
         return <AnalyticsNotFound />;
     }
 
@@ -42,7 +40,7 @@ export default function PlatformUsage() {
 
     // Merge Watch History and Video Metadata into one Array shape.
     // Filter based on the platform
-    const platform: PlatformId = platformId;
+    const platform = platformId;
     const rows: VideoRowDetails[] = watchHistory.flatMap(({ day, videos }) => {
         return Object.entries(videos).flatMap(([videoKey, bytes]) => {
             const { platform, videoTag } = parseVideoKey(videoKey);

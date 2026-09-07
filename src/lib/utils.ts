@@ -2,6 +2,11 @@ import CONFIG from "@lib/constants";
 import humanize from "humanize-duration";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { PlatformId } from "@app-types/types";
+
+export function isPlatformId(id: string): id is PlatformId {
+    return (CONFIG.PLATFORMS as readonly string[]).includes(id);
+}
 
 export function isYoutubePage(url: string): boolean {
     try {
