@@ -1,25 +1,28 @@
+import { Button } from "@components/ui/button";
 import { totalSizeVideoDisplay } from "@lib/formatting";
+import { chromeNavigate } from "@lib/utils";
 
 export default function PopupUsage({
     text,
     usage,
-    onClick,
+    navigateTo,
 }: {
     text: string;
     usage: number | undefined;
-    onClick?: () => void;
+    navigateTo?: string;
 }) {
     if (usage === undefined) return null;
 
     return (
-        <div>
-            <button
-                className="flex w-full items-center justify-between rounded-lg border border-white/12 bg-white/3 px-3 py-2 text-xs font-medium text-zinc-300 hover:cursor-pointer hover:bg-white/6"
-                onClick={onClick}
+        <div className="w-full">
+            <Button
+                variant="outline"
+                className="w-full justify-between gap-2 overflow-hidden"
+                onClick={navigateTo ? () => chromeNavigate(navigateTo) : undefined}
             >
                 <span className="truncate">{text}</span>
-                <span>{totalSizeVideoDisplay(usage)}</span>
-            </button>
+                <span className="shrink-0">{totalSizeVideoDisplay(usage)}</span>
+            </Button>
         </div>
     );
 }

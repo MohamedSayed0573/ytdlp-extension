@@ -1,5 +1,5 @@
 import { formatBytes } from "@lib/dashboardUtils";
-import { useNavigate } from "react-router";
+import BackToDashBoardBtn from "./backToDashboardBtn";
 
 function HeaderStat({ label, value }: { label: string; value: number | string }) {
     return (
@@ -18,19 +18,11 @@ interface DashboardHeaderProps {
 }
 
 export default function DashboardHeader({ title, totalDataUsage }: DashboardHeaderProps) {
-    const navigate = useNavigate();
     const formattedDataUsage = formatBytes(totalDataUsage);
 
     return (
         <div className="flex items-center justify-between gap-5 border-b border-neutral-700 bg-neutral-800 p-2.5 text-lg font-bold">
-            <button
-                className="flex cursor-pointer items-center justify-center rounded-lg border border-teal-700 bg-teal-900 p-2.5 font-mono text-sm font-bold text-teal-300 hover:border-teal-600 hover:bg-teal-800"
-                onClick={() => {
-                    void navigate("/dashboard");
-                }}
-            >
-                ← Back to Dashboard
-            </button>
+            <BackToDashBoardBtn />
             <div className="w-1/2 font-mono text-lg text-teal-400">{title}</div>
             <div className="flex flex-1 items-center justify-evenly">
                 <HeaderStat label="Total Data Used" value={formattedDataUsage} />
