@@ -22,9 +22,9 @@ export default function AnalyticsHeader({ title, totalDataUsage }: AnalyticsHead
     const formattedDataUsage = formatBytes(totalDataUsage);
 
     return (
-        <div className="flex items-center justify-between gap-5 border-b border-neutral-800 bg-neutral-950 p-2.5 text-lg font-bold">
+        <div className="flex items-center justify-between gap-5 border-b border-neutral-700 bg-neutral-800 p-2.5 text-lg font-bold">
             <button
-                className="flex cursor-pointer items-center justify-center rounded-lg border border-teal-900 bg-teal-950 p-2.5 font-mono text-sm font-bold text-teal-400 hover:border-teal-800 hover:bg-teal-900"
+                className="flex cursor-pointer items-center justify-center rounded-lg border border-teal-700 bg-teal-900 p-2.5 font-mono text-sm font-bold text-teal-300 hover:border-teal-600 hover:bg-teal-800"
                 onClick={() => {
                     void navigate("/analytics");
                 }}

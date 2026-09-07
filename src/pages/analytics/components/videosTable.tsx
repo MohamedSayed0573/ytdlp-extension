@@ -3,6 +3,7 @@ import VideoTableRow from "@pages/analytics/components/videoTableRow";
 import type { VideoRowDetails } from "@pages/analytics/components/videoTableRow";
 
 export type { VideoRowDetails } from "@pages/analytics/components/videoTableRow";
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function VideosTable({
     rows,
@@ -14,15 +15,15 @@ export default function VideosTable({
     const sorted = rows.toSorted((a, b) => b.usage - a.usage);
 
     return (
-        <table className="border-collapse border-spacing-0">
-            <thead className="border-b border-neutral-800 font-mono text-sm uppercase">
-                <tr>
-                    <th className="w-15 px-3.5 py-3.5 text-center">#</th>
-                    <th className="px-3.5 py-3.5 text-left">VIDEO</th>
-                    <th className="px-3.5 py-3.5 text-left">DATA USED</th>
-                </tr>
-            </thead>
-            <tbody>
+        <Table className="font-mono">
+            <TableHeader className="uppercase">
+                <TableRow>
+                    <TableHead className="text-center">#</TableHead>
+                    <TableHead>VIDEO</TableHead>
+                    <TableHead>DATA USED</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
                 {sorted.map((videoDetails, index) => {
                     return (
                         <VideoTableRow
@@ -33,7 +34,7 @@ export default function VideosTable({
                         />
                     );
                 })}
-            </tbody>
-        </table>
+            </TableBody>
+        </Table>
     );
 }

@@ -3,6 +3,8 @@ import { Link } from "react-router";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import type { DateKey, PlatformId } from "@app-types/types";
 
+import { TableCell, TableRow } from "@/components/ui/table";
+
 const PLACEHOLDER_IMAGE = "/thumbnail-placeholder.svg";
 
 function getVideoUrl(platform: PlatformId, videoTag: string) {
@@ -44,14 +46,12 @@ export default function VideoTableRow({
     const videoTitle = videoDetails.title || platform;
 
     return (
-        <tr className="hover:cursor-pointer hover:bg-neutral-800">
-            <td className="border-b border-neutral-800 px-3 py-3 text-center font-mono text-sm text-stone-200">
-                {index}
-            </td>
+        <TableRow className="text-stone-200 hover:cursor-pointer hover:bg-neutral-800">
+            <TableCell className="px-3 py-3 text-center">{index}</TableCell>
 
-            <td className="flex items-center gap-5 border-b border-neutral-800 px-3 py-3 text-left font-mono text-sm text-stone-200">
-                <a target="_blank" rel="noreferrer" href={url}>
-                    <AspectRatio ratio={16 / 9} className="w-40 shrink-0">
+            <TableCell className="flex items-center gap-5 p-3">
+                <AspectRatio ratio={16 / 9} className="w-40 shrink-0">
+                    <a target="_blank" rel="noreferrer" href={url}>
                         <img
                             className="h-full w-full rounded-lg object-cover"
                             src={imageUrl}
@@ -60,21 +60,27 @@ export default function VideoTableRow({
                                 e.currentTarget.src = PLACEHOLDER_IMAGE;
                             }}
                         />
-                    </AspectRatio>
-                </a>
+                    </a>
+                </AspectRatio>
 
-                <div className="flex min-w-0 flex-col gap-1 overflow-hidden">
+                <div className="flex flex-col gap-1">
                     <span className="truncate text-base">
                         <a href={url} target="_blank" rel="noreferrer">
                             {videoTitle}
                         </a>
                     </span>
                     {videoDetails.channelName && (
-                        <span className="truncate text-sm text-gray-500">
-                            {videoDetails.channelName}
+                        <span className="truncate text-sm text-gray-500 hover:underline">
+                            <a
+                                href={`https://www.youtube.com/@${videoDetails.channelName}`}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                {videoDetails.channelName}
+                            </a>
                         </span>
                     )}
-                    <span className="truncate text-sm font-normal text-gray-400">
+                    <span className="truncate text-sm font-normal">
                         <Link
                             className="text-gray-400 no-underline hover:underline"
                             to={`/analytics/${date}`}
@@ -83,11 +89,9 @@ export default function VideoTableRow({
                         </Link>
                     </span>
                 </div>
-            </td>
+            </TableCell>
 
-            <td className="border-b border-neutral-800 px-3 py-3 text-left font-mono text-base text-stone-200">
-                {formatBytes(usage)}
-            </td>
-        </tr>
+            <TableCell className="text-base">{formatBytes(usage)}</TableCell>
+        </TableRow>
     );
 }

@@ -7,10 +7,9 @@ import { useWatchHistory } from "@hooks/useWatchHistory";
 import type { PlatformId, UsageScope } from "@app-types/types";
 
 const PLATFORM_STYLES = {
-    youtube:
-        "bg-linear-to-br from-red-800 via-red-950 to-red-950 hover:from-red-700 hover:via-red-900",
-    twitch: "bg-linear-to-br from-blue-800 via-blue-950 to-blue-950 hover:from-blue-700 hover:via-blue-900",
-    kick: "bg-linear-to-br from-lime-800 via-lime-950 to-lime-950 hover:from-lime-700 hover:via-lime-900",
+    youtube: "border-l-red-500 hover:border-red-900",
+    twitch: "border-l-blue-500 hover:border-blue-900",
+    kick: "border-l-lime-500 hover:border-lime-900",
 } as const;
 
 export default function PlatformCards({ scope }: { scope: UsageScope }) {
@@ -39,7 +38,7 @@ export default function PlatformCards({ scope }: { scope: UsageScope }) {
                         key={platform}
                         to={`/analytics/platform/${platform}${search}`}
                         className={cn(
-                            "flex h-28 w-full max-w-sm items-center gap-4 rounded-2xl px-4 transition-colors",
+                            "flex h-28 w-full max-w-sm items-center gap-4 rounded-xl border border-l-3 border-neutral-700 bg-neutral-800 px-4 transition-colors hover:bg-neutral-700",
                             PLATFORM_STYLES[platform],
                         )}
                     >
