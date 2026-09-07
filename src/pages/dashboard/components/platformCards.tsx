@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { formatBytes } from "@lib/dashboardUtils";
-import { PlatformLogo } from "@pages/analytics/components/platformLogos";
-import { buildPlatformSearch, parseVideoKey } from "@pages/analytics/components/platformUtils";
+import { PlatformLogo } from "@pages/dashboard/components/platformLogos";
+import { buildPlatformSearch, parseVideoKey } from "@pages/dashboard/components/platformUtils";
 import { capitalize, cn } from "@lib/utils";
 import { useWatchHistory } from "@hooks/useWatchHistory";
 import type { PlatformId, UsageScope } from "@app-types/types";
@@ -36,7 +36,7 @@ export default function PlatformCards({ scope }: { scope: UsageScope }) {
                 return (
                     <Link
                         key={platform}
-                        to={`/analytics/platform/${platform}${search}`}
+                        to={`/dashboard/platform/${platform}${search}`}
                         className={cn(
                             "flex h-28 w-full max-w-sm items-center gap-4 rounded-xl border border-l-3 border-neutral-700 bg-neutral-800 px-4 transition-colors hover:bg-neutral-700",
                             PLATFORM_STYLES[platform],

@@ -1,11 +1,11 @@
 import { formatDate } from "@lib/dashboardUtils";
-import AnalyticsHeader from "@pages/analytics/components/analyticsHeader";
-import UsageDetailsSkeleton from "@pages/analytics/components/usageDetailsSkeleton";
-import NoUsageData from "@pages/analytics/components/noUsageData";
+import DashboardHeader from "@pages/dashboard/components/dashboardHeader";
+import UsageDetailsSkeleton from "@pages/dashboard/components/usageDetailsSkeleton";
+import NoUsageData from "@pages/dashboard/components/noUsageData";
 import { useSiteUsage } from "@hooks/useSiteUsage";
 import { getLastNDays, getUsageNumber } from "@lib/dashboardUtils";
 import { useParams } from "react-router";
-import AnalyticsNotFound from "../analyticsNotFound";
+import DashboardNotFound from "../dashboardNotFound";
 import type { DateKey, UsageRange, UsageScope } from "@app-types/types";
 import PlatformCards from "../components/platformCards";
 import SiteTable from "../components/siteTable";
@@ -63,14 +63,14 @@ export function UsageScopePage() {
 
     const { data: usage, isPending, isError, error } = useSiteUsage(scope);
 
-    if (!scope) return <AnalyticsNotFound />;
+    if (!scope) return <DashboardNotFound />;
     if (isPending) return <UsageDetailsSkeleton />;
     if (isError) throw error;
     if (!usage) return <NoUsageData />;
 
     return (
         <>
-            <AnalyticsHeader title={getTitle(scope)} totalDataUsage={getUsageNumber(usage)} />
+            <DashboardHeader title={getTitle(scope)} totalDataUsage={getUsageNumber(usage)} />
             <div className="flex flex-1 flex-col bg-neutral-900">
                 <PlatformCards scope={scope} />
                 <SiteTable usage={usage} />

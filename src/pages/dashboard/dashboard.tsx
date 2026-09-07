@@ -1,9 +1,9 @@
 import { formatBytes } from "@lib/dashboardUtils";
 import { Link } from "react-router";
-import { AnalyticsSkeleton } from "@pages/analytics/components/analyticsSkeleton";
-import AnalyticsBanner from "@pages/analytics/components/analyticsBanner";
-import ClearUsageButton from "@pages/analytics/components/clearUsageButton";
-import NoUsageData from "@pages/analytics/components/noUsageData";
+import { DashboardSkeleton } from "@pages/dashboard/components/dashboardSkeleton";
+import DashboardBanner from "@pages/dashboard/components/dashboardBanner";
+import ClearUsageButton from "@pages/dashboard/components/clearUsageButton";
+import NoUsageData from "@pages/dashboard/components/noUsageData";
 import { Chart } from "./components/chart";
 import { useSiteUsage } from "@hooks/useSiteUsage";
 import type { SiteUsage } from "@/db";
@@ -35,7 +35,7 @@ function StatsRow({ usage }: { usage: SiteUsage[] }) {
                 <StatsCard title="Today" number={todayUsage ? getUsageNumber([todayUsage]) : 0} />
             </Link>
             <Link to="week">
-                <StatsCard title="This Week" number={getUsageNumber(last7DaysUsage)} />
+                <StatsCard title="Last 7 Days" number={getUsageNumber(last7DaysUsage)} />
             </Link>
             <Link to="month">
                 <StatsCard title="Last 30 Days" number={getUsageNumber(last30DaysUsage)} />
@@ -62,16 +62,16 @@ function UsageChartSection({ usage }: { usage: SiteUsage[] }) {
     );
 }
 
-export default function Analytics() {
+export default function Dashboard() {
     const { data: usage, isPending, isError, error } = useSiteUsage();
 
-    if (isPending) return <AnalyticsSkeleton />;
+    if (isPending) return <DashboardSkeleton />;
     if (isError) throw error;
     if (!usage) return <NoUsageData />;
 
     return (
         <>
-            <AnalyticsBanner />
+            <DashboardBanner />
             <div className="flex flex-1 flex-col bg-neutral-950/70 px-8 pt-1 pb-3.5">
                 <StatsRow usage={usage} />
                 <UsageChartSection usage={usage} />

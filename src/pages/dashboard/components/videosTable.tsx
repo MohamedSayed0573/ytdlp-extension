@@ -1,8 +1,8 @@
 import type { PlatformId } from "@app-types/types";
-import VideoTableRow from "@pages/analytics/components/videoTableRow";
-import type { VideoRowDetails } from "@pages/analytics/components/videoTableRow";
+import VideoTableRow from "@pages/dashboard/components/videoTableRow";
+import type { VideoRowDetails } from "@pages/dashboard/components/videoTableRow";
 
-export type { VideoRowDetails } from "@pages/analytics/components/videoTableRow";
+export type { VideoRowDetails } from "@pages/dashboard/components/videoTableRow";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function VideosTable({
