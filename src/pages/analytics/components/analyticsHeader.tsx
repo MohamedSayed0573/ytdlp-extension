@@ -12,12 +12,12 @@ function HeaderStat({ label, value }: { label: string; value: number | string })
     );
 }
 
-interface DashboardHeaderProps {
+interface AnalyticsHeaderProps {
     title: string;
     totalDataUsage: number;
 }
 
-export default function DashboardHeader({ title, totalDataUsage }: DashboardHeaderProps) {
+export default function AnalyticsHeader({ title, totalDataUsage }: AnalyticsHeaderProps) {
     const navigate = useNavigate();
     const formattedDataUsage = formatBytes(totalDataUsage);
 
@@ -26,10 +26,10 @@ export default function DashboardHeader({ title, totalDataUsage }: DashboardHead
             <button
                 className="flex cursor-pointer items-center justify-center rounded-lg border border-teal-900 bg-teal-950 p-2.5 font-mono text-sm font-bold text-teal-400 hover:border-teal-800 hover:bg-teal-900"
                 onClick={() => {
-                    void navigate("/dashboard");
+                    void navigate("/analytics");
                 }}
             >
-                ← Back to Dashboard
+                ← Back to Analytics
             </button>
             <div className="w-1/2 font-mono text-lg text-teal-400">{title}</div>
             <div className="flex flex-1 items-center justify-evenly">

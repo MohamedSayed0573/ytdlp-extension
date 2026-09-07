@@ -4,11 +4,11 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Routes, Route, HashRouter } from "react-router";
 import Popup from "@pages/popup/popup";
 import Options from "@pages/options/options";
-import Dashboard from "@pages/dashboard/dashboard";
-import { UsageScopePage } from "@pages/dashboard/usage/usageScopePage";
-import PlatformUsage from "@pages/dashboard/platform/platformUsage";
-import DashboardErrorPage from "@pages/dashboard/dashboardErrorPage";
-import DashboardNotFound from "@pages/dashboard/dashboardNotFound";
+import Analytics from "@pages/analytics/analytics";
+import { UsageScopePage } from "@pages/analytics/usage/usageScopePage";
+import PlatformUsage from "@pages/analytics/platform/platformUsage";
+import AnalyticsErrorPage from "@pages/analytics/analyticsErrorPage";
+import AnalyticsNotFound from "@pages/analytics/analyticsNotFound";
 import OptionsErrorPage from "@pages/options/optionsErrorPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -16,7 +16,7 @@ import "@styles/global.css";
 import "@fontsource-variable/jetbrains-mono/wght.css";
 import { StrictMode } from "react";
 import { PopupLayout } from "@layouts/popupLayout";
-import DashboardLayout from "@layouts/dashboardLayout";
+import AnalyticsLayout from "@layouts/analyticsLayout";
 import { OptionsLayout } from "@layouts/optionsLayout";
 
 const domRoot = document.querySelector("#root") as HTMLElement;
@@ -52,17 +52,17 @@ root.render(
                     </Route>
 
                     <Route
-                        path="/dashboard"
+                        path="/analytics"
                         element={
-                            <ErrorBoundary FallbackComponent={DashboardErrorPage}>
-                                <DashboardLayout />
+                            <ErrorBoundary FallbackComponent={AnalyticsErrorPage}>
+                                <AnalyticsLayout />
                             </ErrorBoundary>
                         }
                     >
-                        <Route index element={<Dashboard />} />
+                        <Route index element={<Analytics />} />
                         <Route path=":date" element={<UsageScopePage />} />
                         <Route path="platform/:platformId" element={<PlatformUsage />} />
-                        <Route path="*" element={<DashboardNotFound />} />
+                        <Route path="*" element={<AnalyticsNotFound />} />
                     </Route>
                 </Routes>
             </HashRouter>

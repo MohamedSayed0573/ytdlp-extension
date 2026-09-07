@@ -44,7 +44,7 @@ Cached Kick VOD metadata may include:
 - Stream variants
 - Bitrate or size estimates
 
-### YouTube usage dashboard data stored locally
+### YouTube usage analytics stored locally
 
 TubeSize stores local YouTube usage information under the `usageByDay` key in `chrome.storage.local`.
 
@@ -92,11 +92,11 @@ TubeSize uses Chrome extension storage APIs.
 
 ### Local storage
 
-Media metadata cache and YouTube usage dashboard data are stored in `chrome.storage.local` on the user's device.
+Media metadata cache and YouTube usage analytics are stored in `chrome.storage.local` on the user's device.
 
 Cached media metadata expires based on the selected cache duration. The default cache duration is 3 days, and users may choose supported durations such as 1, 3, or 7 days.
 
-Local cache and dashboard data remain on the user's device unless:
+Local cache and analytics data remain on the user's device unless:
 
 - The data expires according to the selected cache duration
 - The user clears it from TubeSize options
@@ -161,13 +161,13 @@ TubeSize may disclose information if required by law or to protect the security,
 
 TubeSize uses HTTPS for reviewed network requests to supported video platforms and related playback/CDN endpoints.
 
-TubeSize stores extension data using Chrome extension storage APIs. Local cache and dashboard data are stored on the user's device. Sync settings are handled by the browser's sync system when enabled.
+TubeSize stores extension data using Chrome extension storage APIs. Local cache and analytics data are stored on the user's device. Sync settings are handled by the browser's sync system when enabled.
 
 No method of storage or transmission is completely secure, but TubeSize is designed to limit data handling to what is needed for its user-facing functionality.
 
 ## User controls and deletion
 
-Users can clear TubeSize local cache and local dashboard data from:
+Users can clear TubeSize local cache and local analytics data from:
 
 **Options > Cache > Clear Cache**
 
@@ -213,7 +213,7 @@ Used to identify and communicate with the currently active supported tab, such a
 
 ### `storage`
 
-Used to store local cache, local YouTube usage dashboard data, and user settings.
+Used to store local cache, local YouTube usage analytics, and user settings.
 
 ### Host permissions and content scripts
 

@@ -77,7 +77,7 @@ export default function VideoTableRow({
                     <span className="truncate text-sm font-normal text-gray-400">
                         <Link
                             className="text-gray-400 no-underline hover:underline"
-                            to={`/dashboard/${date}`}
+                            to={`/analytics/${date}`}
                         >
                             {date}
                         </Link>

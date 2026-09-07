@@ -1,5 +1,5 @@
 import { Skeleton } from "@components/ui/skeleton";
-import VideoTableRowSkeleton from "@pages/dashboard/components/videoTableRowSkeleton";
+import VideoTableRowSkeleton from "@pages/analytics/components/videoTableRowSkeleton";
 
 function HeaderStatSkeleton() {
     return (

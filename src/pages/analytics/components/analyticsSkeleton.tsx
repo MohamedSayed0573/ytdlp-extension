@@ -1,6 +1,6 @@
 import { Skeleton } from "@components/ui/skeleton";
 import { Link } from "react-router";
-import DashboardBanner from "./dashboardBanner";
+import AnalyticsBanner from "./analyticsBanner";
 import ClearUsageButton from "./clearUsageButton";
 
 function StatsCard({ title }: { title: string }) {
@@ -67,10 +67,10 @@ function ChartSkeleton() {
     );
 }
 
-export function DashboardSkeleton() {
+export function AnalyticsSkeleton() {
     return (
         <>
-            <DashboardBanner />
+            <AnalyticsBanner />
             <div className="flex flex-1 flex-col bg-neutral-950/70 px-8 pt-1 pb-3.5">
                 <StatsRow />
                 <ChartSkeleton />
