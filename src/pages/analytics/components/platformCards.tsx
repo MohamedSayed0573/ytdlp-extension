@@ -7,9 +7,10 @@ import { useWatchHistory } from "@hooks/useWatchHistory";
 import type { PlatformId, UsageScope } from "@app-types/types";
 
 const PLATFORM_STYLES = {
-    youtube: "bg-linear-to-r from-red-950/70 via-neutral-900 to-neutral-900",
-    twitch: "bg-linear-to-r from-violet-950/70 via-neutral-900 to-neutral-900",
-    kick: "bg-linear-to-r from-lime-950/60 via-neutral-900 to-neutral-900",
+    youtube:
+        "bg-linear-to-br from-red-800 via-red-950 to-red-950 hover:from-red-700 hover:via-red-900",
+    twitch: "bg-linear-to-br from-blue-800 via-blue-950 to-blue-950 hover:from-blue-700 hover:via-blue-900",
+    kick: "bg-linear-to-br from-lime-800 via-lime-950 to-lime-950 hover:from-lime-700 hover:via-lime-900",
 } as const;
 
 export default function PlatformCards({ scope }: { scope: UsageScope }) {
@@ -31,14 +32,14 @@ export default function PlatformCards({ scope }: { scope: UsageScope }) {
     const search = buildPlatformSearch(scope);
 
     return (
-        <div className="flex justify-center gap-4 border-b border-neutral-800 p-4">
+        <div className="flex justify-center gap-4 p-4">
             {[...platformToBytes].map(([platform, bytes]) => {
                 return (
                     <Link
                         key={platform}
                         to={`/analytics/platform/${platform}${search}`}
                         className={cn(
-                            "flex h-28 w-full max-w-sm items-center gap-4 rounded-2xl px-4 ring-1 transition-colors hover:bg-neutral-800",
+                            "flex h-28 w-full max-w-sm items-center gap-4 rounded-2xl px-4 transition-colors",
                             PLATFORM_STYLES[platform],
                         )}
                     >
