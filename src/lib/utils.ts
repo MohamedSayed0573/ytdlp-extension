@@ -264,3 +264,9 @@ export function capitalize(str: string) {
     if (str.length === 0) return str;
     return str[0]?.toUpperCase() + str.slice(1);
 }
+
+export function chromeNavigate(pageName: string) {
+    void chrome.tabs.create({
+        url: chrome.runtime.getURL(`index.html#/${pageName}`),
+    });
+}
