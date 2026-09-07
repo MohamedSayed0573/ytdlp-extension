@@ -97,4 +97,6 @@ export type PlatformId = (typeof CONFIG.PLATFORMS)[number];
 
 export type UsageRange = (typeof CONFIG.RANGES)[number];
 
-export type UsageScope = { type: "date"; date: string } | { type: "range"; range: UsageRange };
+export type UsageScope = { type: "date"; date: DateKey } | { type: "range"; range: UsageRange };
+
+export type DateKey = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;

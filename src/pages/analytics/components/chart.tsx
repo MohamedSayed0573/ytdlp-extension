@@ -49,8 +49,7 @@ export function Chart({ usage }: { usage: SiteUsage[] }) {
                             tickMargin={8}
                             minTickGap={32}
                             tickFormatter={(value: string) => {
-                                const date = new Date(value);
-                                return date.toLocaleDateString("en-CA", {
+                                return new Date(`${value}T00:00:00`).toLocaleDateString("en-CA", {
                                     month: "short",
                                     day: "numeric",
                                 });
@@ -67,14 +66,13 @@ export function Chart({ usage }: { usage: SiteUsage[] }) {
                                 <ChartTooltipContent
                                     className="w-37.5"
                                     labelFormatter={(value) => {
-                                        return new Date(value as string).toLocaleDateString(
-                                            "en-CA",
-                                            {
-                                                month: "short",
-                                                day: "numeric",
-                                                year: "numeric",
-                                            },
-                                        );
+                                        return new Date(
+                                            `${value as string}T00:00:00`,
+                                        ).toLocaleDateString("en-CA", {
+                                            month: "short",
+                                            day: "numeric",
+                                            year: "numeric",
+                                        });
                                     }}
                                 />
                             }

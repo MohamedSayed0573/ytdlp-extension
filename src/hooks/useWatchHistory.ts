@@ -1,18 +1,18 @@
-import { getAllVideoMetadata, getAllWatchHistory } from "@/db";
+import { getAllWatchHistory, getWatchHistoryByDate } from "@/db";
+import type { UsageScope } from "@app-types/types";
+import { scopeToDateKey } from "@lib/dashboardUtils";
 import { useQuery } from "@tanstack/react-query";
 
-export function useWatchHistory() {
+export function useWatchHistory(scope?: UsageScope) {
     return useQuery({
-        queryKey: ["watchHistory"],
+        queryKey: ["watchHistory", scope],
         queryFn: async () => {
-            const [history, metadata] = await Promise.all([
-                getAllWatchHistory(),
-                getAllVideoMetadata(),
-            ]);
-            return {
-                history,
-                metadata,
-            };
+            if (!scope) return { history: await getAllWatchHistory() };
+
+            const dateKey = scopeToDateKey(scope);
+            if (dateKey.kind === "all") return { history: await getAllWatchHistory() };
+
+            return { history: await getWatchHistoryByDate(dateKey.days) };
         },
     });
 }

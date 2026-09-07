@@ -267,7 +267,7 @@ async function handleAddWatchHistory(
 }
 async function handleGetWatchHistory(sendResponse: (response: any) => void) {
     try {
-        const usage = await getWatchHistory(getDateKey(new Date()));
+        const usage = await getWatchHistory();
 
         sendResponse({
             success: true,
@@ -287,7 +287,7 @@ function isValidUsageBytes(usage: unknown): usage is number {
 
 async function handleGetUsage(sendResponse: (response: GetUsageResponse) => void) {
     try {
-        const usage = await getSiteUsage(getDateKey(new Date()));
+        const usage = await getSiteUsage(getDateKey());
 
         sendResponse({
             success: true,

@@ -1,4 +1,4 @@
-import type { PlatformId, UsageScope } from "@app-types/types";
+import type { DateKey, PlatformId, UsageScope } from "@app-types/types";
 import CONFIG from "@lib/constants";
 import { formatDate } from "@lib/dashboardUtils";
 
@@ -8,7 +8,7 @@ export function buildPlatformSearch(scope: UsageScope): string {
 
 export function parseUsageScope(searchParams: URLSearchParams): UsageScope {
     const date = searchParams.get("date");
-    if (date) return { type: "date", date };
+    if (date) return { type: "date", date: date as DateKey };
 
     const rangeParam = searchParams.get("range");
     const range = CONFIG.RANGES.find((r) => r === rangeParam) ?? "lifetime";
@@ -16,7 +16,7 @@ export function parseUsageScope(searchParams: URLSearchParams): UsageScope {
 }
 
 export function getScopeLabel(scope: UsageScope): string {
-    if (scope.type === "date") return formatDate(new Date(scope.date));
+    if (scope.type === "date") return formatDate(scope.date);
 
     switch (scope.range) {
         case "today": {

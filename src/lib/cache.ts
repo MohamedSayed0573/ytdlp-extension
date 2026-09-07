@@ -159,7 +159,7 @@ export async function saveToStorage(
     const dataToStore: StorageData<YoutubeData | TwitchData | KickData> = {
         data,
         expiry,
-        createdAt: getDateKey(new Date()),
+        createdAt: getDateKey(),
     };
 
     const prefix = target;

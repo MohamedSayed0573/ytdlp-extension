@@ -1,7 +1,7 @@
 import { formatBytes } from "@lib/dashboardUtils";
 import { Link } from "react-router";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import type { PlatformId } from "@app-types/types";
+import type { DateKey, PlatformId } from "@app-types/types";
 
 const PLACEHOLDER_IMAGE = "/thumbnail-placeholder.svg";
 
@@ -25,7 +25,7 @@ export interface VideoRowDetails {
     title: string | undefined;
     thumbnailUrl: string | undefined;
     channelName: string | undefined;
-    date: string;
+    date: DateKey;
 }
 
 export default function VideoTableRow({

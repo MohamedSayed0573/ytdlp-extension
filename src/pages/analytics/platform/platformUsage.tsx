@@ -9,7 +9,7 @@ import {
     parseUsageScope,
     parseVideoKey,
 } from "@pages/analytics/components/platformUtils";
-import { filterHistoryBasedOnScope } from "@lib/dashboardUtils";
+import { useVideoMetadata } from "@hooks/useVideoMetadata";
 import { useWatchHistory } from "@hooks/useWatchHistory";
 import { capitalize } from "@lib/utils";
 import type { PlatformId } from "@app-types/types";
@@ -21,23 +21,28 @@ export default function PlatformUsage() {
     const [searchParams] = useSearchParams();
     const scope = parseUsageScope(searchParams);
 
-    const historyQuery = useWatchHistory();
+    const historyQuery = useWatchHistory(scope);
+
+    const watchHistory = historyQuery.data?.history;
+    const metadataQuery = useVideoMetadata();
+
     if (platformId !== "youtube" && platformId !== "twitch" && platformId !== "kick") {
         return <AnalyticsNotFound />;
     }
 
     if (historyQuery.isPending) return <UsageDetailsSkeleton />;
     if (historyQuery.isError) throw historyQuery.error;
+    if (metadataQuery.isPending) return <UsageDetailsSkeleton />;
+    if (metadataQuery.isError) throw metadataQuery.error;
 
-    const historyDays = historyQuery.data.history;
-    const filteredHistory = filterHistoryBasedOnScope(historyDays, scope);
+    const metadata = metadataQuery.data;
 
-    const metadata = historyQuery.data.metadata;
+    if (!watchHistory || !metadata || metadata.length === 0) return <NoUsageData />;
 
     // Merge Watch History and Video Metadata into one Array shape.
     // Filter based on the platform
     const platform: PlatformId = platformId;
-    const rows: VideoRowDetails[] = filteredHistory.flatMap(({ day, videos }) => {
+    const rows: VideoRowDetails[] = watchHistory.flatMap(({ day, videos }) => {
         return Object.entries(videos).flatMap(([videoKey, bytes]) => {
             const { platform, videoTag } = parseVideoKey(videoKey);
 
@@ -81,11 +86,7 @@ export default function PlatformUsage() {
                 </div>
 
                 <div className="flex flex-1 flex-col rounded-2xl border border-neutral-800 bg-neutral-900">
-                    {rows.length === 0 ? (
-                        <NoUsageData />
-                    ) : (
-                        <VideosTable rows={rows} platform={platform} />
-                    )}
+                    <VideosTable rows={rows} platform={platform} />
                 </div>
             </div>
         </>

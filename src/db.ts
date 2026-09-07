@@ -1,14 +1,14 @@
-import type { PlatformId } from "@app-types/types";
+import type { DateKey, PlatformId } from "@app-types/types";
 import { getDateKey } from "@lib/dashboardUtils";
 import { Dexie, type Table } from "dexie";
 
 export interface SiteUsage {
-    day: string;
+    day: DateKey;
     usage: Record<string, number>; // Site Origin -> Bytes
 }
 
 export interface WatchHistory {
-    day: string;
+    day: DateKey;
     videos: Record<string, number>; // videoKey -> Bytes
 }
 
@@ -35,7 +35,7 @@ database.version(1).stores({
 
 export async function addSiteUsage(siteUsage: Record<string, number>) {
     if (Object.entries(siteUsage).length === 0) return;
-    const day = getDateKey(new Date());
+    const day = getDateKey();
 
     await database.transaction("readwrite", database.siteUsage, async () => {
         const existing = await database.siteUsage.get(day);
@@ -61,9 +61,17 @@ export async function getAllSiteUsage() {
     return siteUsage.length === 0 ? undefined : siteUsage;
 }
 
+export async function getSiteUsageByDate(day: DateKey): Promise<SiteUsage | undefined>;
+export async function getSiteUsageByDate(day: DateKey[]): Promise<SiteUsage[] | undefined>;
+export async function getSiteUsageByDate(day: DateKey | DateKey[]) {
+    return Array.isArray(day)
+        ? database.siteUsage.where("day").anyOf(day).toArray()
+        : database.siteUsage.get(day);
+}
+
 export async function addWatchHistory(watchHistory: Record<string, number>) {
     if (Object.entries(watchHistory).length === 0) return;
-    const day = getDateKey(new Date());
+    const day = getDateKey();
 
     await database.transaction("readwrite", database.watchHistory, async () => {
         const existing = await database.watchHistory.get(day);
@@ -80,12 +88,21 @@ export async function addWatchHistory(watchHistory: Record<string, number>) {
     });
 }
 
-export async function getWatchHistory(day = getDateKey(new Date())) {
+export async function getWatchHistory(day = getDateKey()) {
     return await database.watchHistory.get(day);
 }
 
 export async function getAllWatchHistory() {
-    return await database.watchHistory.toArray();
+    const watchHistory = await database.watchHistory.toArray();
+    return watchHistory.length === 0 ? undefined : watchHistory;
+}
+
+export async function getWatchHistoryByDate(day: DateKey): Promise<WatchHistory | undefined>;
+export async function getWatchHistoryByDate(day: DateKey[]): Promise<WatchHistory[] | undefined>;
+export async function getWatchHistoryByDate(day: DateKey | DateKey[]) {
+    return Array.isArray(day)
+        ? database.watchHistory.where("day").anyOf(day).reverse().toArray()
+        : database.watchHistory.get(day);
 }
 
 export async function addVideoMetadata(
@@ -101,7 +118,18 @@ export async function getVideoMetadata(videoTag: string, platform: PlatformId) {
 }
 
 export async function getAllVideoMetadata() {
-    return await database.videoMetaData.toArray();
+    const videoMetadata = await database.videoMetaData.toArray();
+    return videoMetadata.length === 0 ? undefined : videoMetadata;
+}
+
+export async function getVideoMetadataByVideoKey(
+    videoKey: string,
+): Promise<VideoMetadata | undefined>;
+export async function getVideoMetadataByVideoKey(videoKey: string[]): Promise<VideoMetadata[]>;
+export async function getVideoMetadataByVideoKey(videoKey: string | string[]) {
+    return Array.isArray(videoKey)
+        ? database.videoMetaData.where("videoKey").anyOf(videoKey).toArray()
+        : database.videoMetaData.get(videoKey);
 }
 
 export async function clearDatabaseData() {

@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { filterHistoryBasedOnScope, formatBytes } from "@lib/dashboardUtils";
+import { formatBytes } from "@lib/dashboardUtils";
 import { PlatformLogo } from "@pages/analytics/components/platformLogos";
 import { buildPlatformSearch, parseVideoKey } from "@pages/analytics/components/platformUtils";
 import { capitalize, cn } from "@lib/utils";
@@ -13,22 +13,20 @@ const PLATFORM_STYLES = {
 } as const;
 
 export default function PlatformCards({ scope }: { scope: UsageScope }) {
-    const { data, isError, error, isPending } = useWatchHistory();
+    const { data, isError, error, isPending } = useWatchHistory(scope);
     if (isError) throw error;
     if (isPending) return;
 
     const { history } = data;
-    const filteredHistory = filterHistoryBasedOnScope(history, scope);
+    if (!history) return;
 
     const platformToBytes: Map<PlatformId, number> = new Map();
-    for (const dayOfWatchHistory of filteredHistory) {
+    for (const dayOfWatchHistory of history) {
         for (const [videoKey, bytes] of Object.entries(dayOfWatchHistory.videos)) {
             const { platform } = parseVideoKey(videoKey);
             platformToBytes.set(platform, (platformToBytes.get(platform) ?? 0) + bytes);
         }
     }
-
-    if (platformToBytes.size === 0) return;
 
     const search = buildPlatformSearch(scope);
 
