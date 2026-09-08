@@ -6,7 +6,7 @@ export default function NoUsageData() {
                     <img
                         className="h-10 w-10 opacity-60"
                         src="/icons/icon-32.png"
-                        alt="Analytics Icon"
+                        alt="Dashboard Icon"
                     />
                     <span className="text-base">No usage data available.</span>
                     <span className="text-xs text-neutral-500">

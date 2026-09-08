@@ -19,6 +19,13 @@ export const ytInitialSchema = z.object({
             ),
         }),
     }),
+    microformat: z
+        .object({
+            playerMicroformatRenderer: z.object({
+                ownerProfileUrl: z.string().optional(),
+            }),
+        })
+        .optional(),
     streamingData: z.object({
         adaptiveFormats: z.array(
             z.object({

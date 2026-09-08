@@ -1,3 +1,48 @@
+import { getDomainWithoutSuffix } from "tldts";
+import { useTotalUsage } from "@hooks/useTotalUsage";
+import { useOriginUsage } from "@hooks/useOriginUsage";
+import useTab from "@hooks/useTab";
+import PopupUsage from "./popupUsage";
+import { capitalize } from "@lib/utils";
+
+function getTabOrigin(tabUrl: string | undefined) {
+    if (!tabUrl) return;
+
+    try {
+        const url = new URL(tabUrl);
+        return url.protocol === "http:" || url.protocol === "https:" ? url.origin : undefined;
+    } catch {
+        return;
+    }
+}
+
 export function PopupViewContainer({ children }: { children: React.ReactNode }) {
-    return <div className="flex flex-col gap-2 px-3 py-1.5 text-xs text-zinc-400">{children}</div>;
+    const { data: tab } = useTab();
+    const origin = getTabOrigin(tab?.tabUrl);
+
+    const totalUsage = useTotalUsage();
+    const originUsage = useOriginUsage(origin);
+
+    return (
+        <div className="flex flex-col gap-2 px-3 py-1.5 text-xs text-zinc-400">
+            <div className="flex flex-col items-center gap-2">
+                <PopupUsage
+                    text="Total Usage Today:"
+                    usage={totalUsage}
+                    navigateTo="dashboard/today"
+                />
+
+                {origin && (
+                    <PopupUsage text={`${getOriginText(origin)} Usage:`} usage={originUsage} />
+                )}
+            </div>
+
+            {children}
+        </div>
+    );
+}
+
+function getOriginText(origin: string) {
+    const websiteName = getDomainWithoutSuffix(origin) ?? origin;
+    return capitalize(websiteName);
 }

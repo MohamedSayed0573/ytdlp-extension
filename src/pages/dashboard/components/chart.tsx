@@ -10,7 +10,8 @@ import {
     ChartTooltipContent,
     type ChartConfig,
 } from "@components/ui/chart";
-import type { UsageByDay } from "@lib/analyticsUtils";
+import type { SiteUsage } from "@/db";
+import { getUsageNumber } from "@lib/dashboardUtils";
 
 const chartConfig = {
     usage: {
@@ -19,19 +20,17 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-export function Chart({ usage: usage }: { usage: UsageByDay }) {
+export function Chart({ usage }: { usage: SiteUsage[] }) {
     const navigate = useNavigate();
-    const usageData = Object.entries(usage).map(([date, videos]) => {
+    const usageData = usage.map(({ day, usage }) => {
         return {
-            date,
-            usage:
-                Object.values(videos).reduce((total, video) => total + video.usage, 0) /
-                (1024 * 1024),
+            date: day,
+            usage: getUsageNumber([{ day, usage }]) / (1024 * 1024),
         };
     });
 
     return (
-        <Card className="my-2 flex min-h-0 flex-1 flex-col py-0">
+        <Card className="my-2 flex min-h-0 flex-1 flex-col bg-[#1d1d1d] py-0 ring-0">
             <CardContent className="flex min-h-0 flex-1 flex-col px-2 sm:p-3">
                 <ChartContainer config={chartConfig} className="aspect-auto min-h-0 w-full flex-1">
                     <BarChart
@@ -50,8 +49,7 @@ export function Chart({ usage: usage }: { usage: UsageByDay }) {
                             tickMargin={8}
                             minTickGap={32}
                             tickFormatter={(value: string) => {
-                                const date = new Date(value);
-                                return date.toLocaleDateString("en-CA", {
+                                return new Date(`${value}T00:00:00`).toLocaleDateString("en-CA", {
                                     month: "short",
                                     day: "numeric",
                                 });
@@ -68,14 +66,13 @@ export function Chart({ usage: usage }: { usage: UsageByDay }) {
                                 <ChartTooltipContent
                                     className="w-37.5"
                                     labelFormatter={(value) => {
-                                        return new Date(value as string).toLocaleDateString(
-                                            "en-CA",
-                                            {
-                                                month: "short",
-                                                day: "numeric",
-                                                year: "numeric",
-                                            },
-                                        );
+                                        return new Date(
+                                            `${value as string}T00:00:00`,
+                                        ).toLocaleDateString("en-CA", {
+                                            month: "short",
+                                            day: "numeric",
+                                            year: "numeric",
+                                        });
                                     }}
                                 />
                             }
@@ -88,7 +85,7 @@ export function Chart({ usage: usage }: { usage: UsageByDay }) {
                             maxBarSize={38}
                             onClick={(data) => {
                                 const date = (data.payload as { date: string }).date;
-                                void navigate(`/analytics/${date}`);
+                                void navigate(`/dashboard/${date}`);
                             }}
                         />
                     </BarChart>

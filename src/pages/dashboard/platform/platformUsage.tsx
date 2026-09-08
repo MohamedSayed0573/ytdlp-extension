@@ -1,0 +1,93 @@
+import { useParams, useSearchParams } from "react-router";
+import DashboardHeader from "@pages/dashboard/components/dashboardHeader";
+import NoUsageData from "@pages/dashboard/components/noUsageData";
+import UsageDetailsSkeleton from "@pages/dashboard/components/usageDetailsSkeleton";
+import VideosTable, { type VideoRowDetails } from "@pages/dashboard/components/videosTable";
+import { PlatformLogo } from "@pages/dashboard/components/platformLogos";
+import {
+    getScopeLabel,
+    parseUsageScope,
+    parseVideoKey,
+} from "@pages/dashboard/components/platformUtils";
+import { useVideoMetadata } from "@hooks/useVideoMetadata";
+import { useWatchHistory } from "@hooks/useWatchHistory";
+import { capitalize, isPlatformId } from "@lib/utils";
+import DashboardNotFound from "../dashboardNotFound";
+
+export default function PlatformUsage() {
+    const { platformId } = useParams();
+
+    const [searchParams] = useSearchParams();
+    const scope = parseUsageScope(searchParams);
+
+    const historyQuery = useWatchHistory(scope);
+
+    const watchHistory = historyQuery.data?.history;
+    const metadataQuery = useVideoMetadata();
+
+    if (!platformId || !isPlatformId(platformId)) {
+        return <DashboardNotFound />;
+    }
+
+    if (historyQuery.isPending) return <UsageDetailsSkeleton />;
+    if (historyQuery.isError) throw historyQuery.error;
+    if (metadataQuery.isPending) return <UsageDetailsSkeleton />;
+    if (metadataQuery.isError) throw metadataQuery.error;
+
+    if (!watchHistory) return <NoUsageData />;
+    const metadata = metadataQuery.data ?? [];
+
+    // Merge Watch History and Video Metadata into one Array shape.
+    // Filter based on the platform
+    const platform = platformId;
+    const rows: VideoRowDetails[] = watchHistory.flatMap(({ day, videos }) => {
+        return Object.entries(videos).flatMap(([videoKey, bytes]) => {
+            const { platform, videoTag } = parseVideoKey(videoKey);
+
+            if (platform !== platformId) return [];
+
+            const videoMetadata = metadata.find((m) => m.videoKey === videoKey);
+
+            return [
+                {
+                    videoTag,
+                    usage: bytes,
+                    date: day,
+                    title: videoMetadata?.title,
+                    channelName: videoMetadata?.channelName,
+                    ownerProfileUrl: videoMetadata?.ownerProfileUrl,
+                    thumbnailUrl: videoMetadata?.thumbnailUrl,
+                },
+            ];
+        });
+    });
+
+    const totalDataUsage = rows.reduce((sum, current) => sum + current.usage, 0);
+    const label = capitalize(platform);
+
+    return (
+        <>
+            <DashboardHeader title={label} totalDataUsage={totalDataUsage} />
+            <div className="flex flex-1 flex-col bg-neutral-950 p-8">
+                <div className="mb-4 flex items-center gap-4">
+                    <PlatformLogo platform={platform} />
+                    <div className="flex flex-col">
+                        <span className="font-mono text-lg font-bold text-stone-100">{label}</span>
+                        <span className="font-mono text-xs text-teal-400">
+                            {getScopeLabel(scope)}
+                        </span>
+                        <span className="font-mono text-sm text-stone-400">
+                            {rows.length === 0
+                                ? "No videos tracked yet"
+                                : `${rows.length} ${rows.length === 1 ? "video" : "videos"} tracked`}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="flex flex-1 flex-col rounded-2xl border border-neutral-800 bg-neutral-900">
+                    <VideosTable rows={rows} platform={platform} />
+                </div>
+            </div>
+        </>
+    );
+}

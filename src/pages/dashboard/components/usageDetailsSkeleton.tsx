@@ -1,11 +1,11 @@
 import { Skeleton } from "@components/ui/skeleton";
-import VideoTableRowSkeleton from "@pages/analytics/components/videoTableRowSkeleton";
+import VideoTableRowSkeleton from "@pages/dashboard/components/videoTableRowSkeleton";
 
 function HeaderStatSkeleton() {
     return (
-        <div className="flex flex-col items-center gap-2.5">
-            <Skeleton className="h-3 w-28" />
-            <Skeleton className="h-7 w-20" />
+        <div className="flex flex-col items-end gap-1.5">
+            <Skeleton className="h-2.5 w-24" />
+            <Skeleton className="h-5 w-16" />
         </div>
     );
 }
@@ -13,11 +13,14 @@ function HeaderStatSkeleton() {
 export default function UsageDetailsSkeleton({ rows = 8 }: { rows?: number }) {
     return (
         <>
-            <div className="flex items-center justify-between gap-5 border-b border-neutral-800 bg-neutral-900 p-2.5">
-                <Skeleton className="h-10 w-40 rounded-lg" />
-                <Skeleton className="h-7 w-1/2" />
-                <div className="flex flex-1 items-center justify-evenly">
-                    <HeaderStatSkeleton />
+            <div className="flex items-center justify-between gap-5 border-b border-neutral-800 bg-neutral-900 px-4 py-3">
+                <div className="flex flex-1 justify-start">
+                    <Skeleton className="h-9 w-40 rounded-lg" />
+                </div>
+                <div className="flex flex-1 justify-center">
+                    <Skeleton className="h-6 w-32" />
+                </div>
+                <div className="flex flex-1 justify-end">
                     <HeaderStatSkeleton />
                 </div>
             </div>

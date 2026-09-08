@@ -1,40 +1,28 @@
+import { Button } from "@components/ui/button";
 import { totalSizeVideoDisplay } from "@lib/formatting";
-import { useEffect } from "react";
-import { getTodayUsage, getUsageNumber } from "@lib/analyticsUtils";
-import useUsage from "@hooks/useUsage";
-import { useQueryClient } from "@tanstack/react-query";
+import { chromeNavigate } from "@lib/utils";
 
-export default function PopupUsage() {
-    const queryClient = useQueryClient();
-    const { query } = useUsage();
-    const { data: usageByDay } = query;
-
-    useEffect(() => {
-        const handleStorageChange = () => {
-            void queryClient.invalidateQueries({ queryKey: ["usage"] });
-        };
-
-        chrome.storage.onChanged.addListener(handleStorageChange);
-        return () => chrome.storage.onChanged.removeListener(handleStorageChange);
-    }, [queryClient]);
-
-    const todayUsage = usageByDay ? getUsageNumber(getTodayUsage(usageByDay)) : 0;
+export default function PopupUsage({
+    text,
+    usage,
+    navigateTo,
+}: {
+    text: string;
+    usage: number | undefined;
+    navigateTo?: string;
+}) {
+    if (usage === undefined) return null;
 
     return (
-        <>
-            {
-                <div>
-                    <button
-                        className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-white/12 bg-white/3 px-3 py-2 text-xs font-medium text-zinc-300 hover:bg-white/6"
-                        onClick={() =>
-                            void chrome.tabs.create({ url: "index.html#/analytics/today" })
-                        }
-                    >
-                        <span>{"YouTube Usage Today: "}</span>
-                        <span>{totalSizeVideoDisplay(todayUsage)}</span>
-                    </button>
-                </div>
-            }
-        </>
+        <div className="w-full">
+            <Button
+                variant="outline"
+                className="w-full justify-between gap-2 overflow-hidden"
+                onClick={navigateTo ? () => chromeNavigate(navigateTo) : undefined}
+            >
+                <span className="truncate">{text}</span>
+                <span className="shrink-0">{totalSizeVideoDisplay(usage)}</span>
+            </Button>
+        </div>
     );
 }
