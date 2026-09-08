@@ -71,7 +71,7 @@ export function UsageScopePage() {
     return (
         <>
             <DashboardHeader title={getTitle(scope)} totalDataUsage={getUsageNumber(usage)} />
-            <div className="flex flex-1 flex-col bg-neutral-900">
+            <div className="flex flex-1 flex-col gap-1 bg-neutral-950/70 pt-1">
                 <PlatformCards scope={scope} />
                 <SiteTable usage={usage} />
             </div>

@@ -30,7 +30,7 @@ export function Chart({ usage }: { usage: SiteUsage[] }) {
     });
 
     return (
-        <Card className="my-2 flex min-h-0 flex-1 flex-col py-0">
+        <Card className="my-2 flex min-h-0 flex-1 flex-col bg-[#1d1d1d] py-0 ring-0">
             <CardContent className="flex min-h-0 flex-1 flex-col px-2 sm:p-3">
                 <ChartContainer config={chartConfig} className="aspect-auto min-h-0 w-full flex-1">
                     <BarChart

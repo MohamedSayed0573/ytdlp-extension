@@ -4,12 +4,13 @@ import { PlatformLogo } from "@pages/dashboard/components/platformLogos";
 import { buildPlatformSearch, parseVideoKey } from "@pages/dashboard/components/platformUtils";
 import { capitalize, cn } from "@lib/utils";
 import { useWatchHistory } from "@hooks/useWatchHistory";
+import { ArrowRight } from "lucide-react";
 import type { PlatformId, UsageScope } from "@app-types/types";
 
 const PLATFORM_STYLES = {
-    youtube: "border-l-red-500 hover:border-red-900",
-    twitch: "border-l-blue-500 hover:border-blue-900",
-    kick: "border-l-lime-500 hover:border-lime-900",
+    youtube: "border-l-red-500 hover:shadow-red-950/40",
+    twitch: "border-l-violet-500 hover:shadow-violet-950/40",
+    kick: "border-l-lime-500 hover:shadow-lime-950/40",
 } as const;
 
 export default function PlatformCards({ scope }: { scope: UsageScope }) {
@@ -28,32 +29,33 @@ export default function PlatformCards({ scope }: { scope: UsageScope }) {
         }
     }
 
+    if (platformToBytes.size === 0) return null;
+
     const search = buildPlatformSearch(scope);
+    const entries = [...platformToBytes].toSorted(([, a], [, b]) => b - a);
 
     return (
-        <div className="flex justify-center gap-4 p-4">
-            {[...platformToBytes].map(([platform, bytes]) => {
+        <div className="flex flex-wrap justify-center gap-3 p-4">
+            {entries.map(([platform, bytes]) => {
                 return (
                     <Link
                         key={platform}
                         to={`/dashboard/platform/${platform}${search}`}
                         className={cn(
-                            "flex h-28 w-full max-w-sm items-center gap-4 rounded-xl border border-l-3 border-neutral-700 bg-neutral-800 px-4 transition-colors hover:bg-neutral-700",
+                            "group flex w-full max-w-sm items-center gap-4 rounded-xl border border-l-4 border-neutral-800 bg-neutral-900 px-4 py-4 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-neutral-800/80 hover:shadow-lg",
                             PLATFORM_STYLES[platform],
                         )}
                     >
                         <PlatformLogo platform={platform} />
-                        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                            <span className="truncate font-mono text-2xl font-bold text-stone-100">
+                        <div className="flex min-w-0 flex-1 flex-col gap-1">
+                            <span className="truncate font-mono text-lg font-bold text-stone-100">
                                 {capitalize(platform)}
                             </span>
-                            <span className="font-mono text-base text-stone-300">
+                            <span className="font-mono text-sm text-stone-400">
                                 {formatBytes(bytes)} used
                             </span>
-                            <span className="font-mono text-xs text-teal-600 underline">
-                                View videos →
-                            </span>
                         </div>
+                        <ArrowRight className="size-4 shrink-0 text-teal-500 opacity-0 transition-opacity group-hover:opacity-100" />
                     </Link>
                 );
             })}
